@@ -21,7 +21,10 @@ const Navbar = () => {
           {user ? (
             <>
               {user.role === 'citizen' && (
-                <Link to="/feed" className="hover:text-blue-400 transition-colors">Feed</Link>
+                <>
+                  <Link to="/feed" className="hover:text-blue-400 transition-colors">Feed</Link>
+                  <Link to="/report-issue" className="hover:text-blue-400 transition-colors">Report Issue</Link>
+                </>
               )}
               {user.role === 'officer' && (
                 <Link to="/officer-dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link>
