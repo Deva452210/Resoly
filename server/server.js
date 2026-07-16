@@ -10,9 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 const authRoutes = require('./routes/authRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
 });
