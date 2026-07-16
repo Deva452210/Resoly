@@ -11,12 +11,18 @@ const generateComplaintData = async (req, res) => {
 
     const imageUrl = req.file.path;
 
+    const { transcript, location } = req.body;
+
     // Fetch the image from Cloudinary to pass it directly to Gemini
     const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
     const imageBuffer = Buffer.from(imageResponse.data, 'binary');
 
     const prompt = `
-Analyze this image and return a JSON object with the following schema exactly. Do not include markdown formatting, markdown blocks, explanations, or any extra text. Return ONLY raw valid JSON.
+Analyze this image and the provided context, then return a JSON object with the following schema exactly. Do not include markdown formatting, markdown blocks, explanations, or any extra text. Return ONLY raw valid JSON.
+
+Context:
+- User Voice Transcript: ${transcript || 'None provided'}
+- Location: ${location || 'Unknown'}
 
 Schema:
 {

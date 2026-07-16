@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Feed from './pages/Feed';
 import ComplaintDetails from './pages/ComplaintDetails';
 import OfficerDashboard from './pages/OfficerDashboard';
+import ReportIssue from './pages/ReportIssue';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route element={<ProtectedRoute allowedRoles={['citizen', 'officer']} />}>
               <Route path="/feed" element={<Feed />} />
               <Route path="/complaint/:id" element={<ComplaintDetails />} />
+              <Route path="/report-issue" element={<ReportIssue />} />
             </Route>
 
             {/* Officer Protected Routes */}
