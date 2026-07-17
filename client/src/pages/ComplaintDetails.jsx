@@ -83,7 +83,7 @@ const ComplaintDetails = () => {
           </div>
 
           {/* Tabs */}
-          <div className="flex border-b border-gray-700 mb-6">
+          <div className="flex border-b border-gray-700 mb-6 overflow-x-auto whitespace-nowrap">
             <button
               onClick={() => setActiveTab('progress')}
               className={`pb-3 px-4 font-medium transition-colors ${
@@ -104,6 +104,18 @@ const ComplaintDetails = () => {
             >
               Resolution
             </button>
+            {complaint.escalation?.generated && (
+              <button
+                onClick={() => setActiveTab('escalation')}
+                className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${
+                  activeTab === 'escalation' 
+                  ? 'text-red-400 border-b-2 border-red-500' 
+                  : 'text-red-500/70 hover:text-red-400'
+                }`}
+              >
+                <span className="text-lg">⚠️</span> Escalation Report
+              </button>
+            )}
           </div>
 
           {/* Tab Content */}
@@ -161,7 +173,7 @@ const ComplaintDetails = () => {
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : activeTab === 'resolution' ? (
               <div className="animate-fadeIn">
                 {complaint.status !== 'Resolved' ? (
                   <div className="bg-gray-700/30 p-8 rounded-lg border border-gray-700/50 text-center flex flex-col items-center justify-center min-h-[200px]">
@@ -195,8 +207,55 @@ const ComplaintDetails = () => {
                         <span>Resolved Date: {complaint.resolution?.resolvedAt ? new Date(complaint.resolution.resolvedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown'}</span>
                       </div>
                     </div>
+
+                    {/* Verification Block */}
+                    <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6">
+                      <h3 className="text-lg font-bold text-white mb-2 text-center">Was this issue actually resolved?</h3>
+                      <div className="flex justify-center gap-4 mt-4">
+                        <button 
+                          onClick={async () => {
+                            try {
+                              const res = await api.post(`/complaints/${id}/verify`, { vote: 'solved' });
+                              setComplaint(res.data);
+                            } catch (e) {
+                              alert(e.response?.data?.message || 'Failed to verify');
+                            }
+                          }}
+                          className="flex items-center gap-2 px-6 py-2 bg-green-900/50 hover:bg-green-800 text-green-400 border border-green-700 rounded-full transition-colors font-medium"
+                        >
+                          👍 Solved ({complaint.verification?.solvedVotes || 0})
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            try {
+                              const res = await api.post(`/complaints/${id}/verify`, { vote: 'not_solved' });
+                              setComplaint(res.data);
+                            } catch (e) {
+                              alert(e.response?.data?.message || 'Failed to verify');
+                            }
+                          }}
+                          className="flex items-center gap-2 px-6 py-2 bg-red-900/50 hover:bg-red-800 text-red-400 border border-red-700 rounded-full transition-colors font-medium"
+                        >
+                          👎 Not Solved ({complaint.verification?.notSolvedVotes || 0})
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="animate-fadeIn bg-red-900/20 p-6 rounded-lg border border-red-900/50">
+                <div className="flex items-center gap-3 mb-4 border-b border-red-900/30 pb-4">
+                  <span className="text-3xl">⚠️</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-red-400">AI Escalation Report</h3>
+                    <p className="text-sm text-red-300/70">Generated at {new Date(complaint.escalation?.generatedAt).toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="text-gray-300 space-y-4 leading-relaxed whitespace-pre-wrap">
+                  {complaint.escalation?.report}
+                </div>
               </div>
             )}
           </div>

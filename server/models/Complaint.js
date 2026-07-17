@@ -33,6 +33,16 @@ const complaintSchema = new mongoose.Schema(
       resolvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
       resolvedAt: { type: Date },
     },
+    verification: {
+      solvedVotes: { type: Number, default: 0 },
+      notSolvedVotes: { type: Number, default: 0 },
+      verifiedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    },
+    escalation: {
+      generated: { type: Boolean, default: false },
+      report: { type: String },
+      generatedAt: { type: Date }
+    }
   },
   { timestamps: true }
 );

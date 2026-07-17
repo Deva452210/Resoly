@@ -6,6 +6,7 @@ const {
   createComplaint,
   getComplaints,
   getComplaintById,
+  verifyComplaint,
 } = require('../controllers/complaintController');
 
 // POST /api/complaints - Create a complaint (optional video)
@@ -16,5 +17,8 @@ router.get('/', getComplaints); // Public or protect? The prompt says "Public fe
 
 // GET /api/complaints/:id - Get single complaint
 router.get('/:id', protect, getComplaintById);
+
+// POST /api/complaints/:id/verify - Verify complaint resolution
+router.post('/:id/verify', protect, verifyComplaint);
 
 module.exports = router;
