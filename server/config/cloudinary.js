@@ -17,6 +17,16 @@ const storage = new CloudinaryStorage({
   },
 });
 
-const upload = multer({ storage });
+const videoStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'resoly_complaints_videos',
+    resource_type: 'video',
+    allowed_formats: ['mp4', 'mov', 'avi', 'mkv'],
+  },
+});
 
-module.exports = { cloudinary, upload };
+const upload = multer({ storage });
+const uploadVideo = multer({ storage: videoStorage });
+
+module.exports = { cloudinary, upload, uploadVideo };

@@ -115,9 +115,42 @@ const ReportIssue = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Saving is disabled for this sprint!');
+    try {
+      const submitForm = new FormData();
+      submitForm.append('title', formData.title);
+      submitForm.append('description', formData.description);
+      submitForm.append('category', formData.category);
+      submitForm.append('department', formData.department);
+      submitForm.append('priority', formData.priority);
+      submitForm.append('imageUrl', formData.imageUrl);
+      
+      const locationData = {};
+      if (locationMode === 'current') {
+        locationData.latitude = lat;
+        locationData.longitude = lng;
+      } else {
+        locationData.area = area;
+        locationData.city = city;
+        locationData.landmark = landmark;
+      }
+      submitForm.append('locationStr', JSON.stringify(locationData));
+
+      if (video) {
+        submitForm.append('video', video);
+      }
+
+      await api.post('/complaints', submitForm, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      alert('Complaint submitted successfully!');
+      window.location.href = '/feed'; // Redirect using window.location to trigger a full re-render/navigate, or we can use useNavigate.
+    } catch (error) {
+      console.error('Error submitting complaint:', error);
+      alert('Failed to submit complaint. Try again.');
+    }
   };
 
   return (
