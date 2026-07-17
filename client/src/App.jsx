@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Feed from './pages/Feed';
 import ComplaintDetails from './pages/ComplaintDetails';
 import OfficerDashboard from './pages/OfficerDashboard';
+import OfficerComplaintDetails from './pages/OfficerComplaintDetails';
 import ReportIssue from './pages/ReportIssue';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             {/* Officer Protected Routes */}
             <Route element={<ProtectedRoute allowedRoles={['officer']} />}>
               <Route path="/officer-dashboard" element={<OfficerDashboard />} />
+              <Route path="/officer-complaint/:id" element={<OfficerComplaintDetails />} />
             </Route>
           </Routes>
         </div>

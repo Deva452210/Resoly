@@ -18,7 +18,7 @@ const complaintSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Reported', 'In Progress', 'Resolved'],
+      enum: ['Reported', 'Assigned', 'In Progress', 'Resolved'],
       default: 'Reported',
     },
     createdBy: {
