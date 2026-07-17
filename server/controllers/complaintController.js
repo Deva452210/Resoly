@@ -50,7 +50,8 @@ const getComplaints = async (req, res) => {
 const getComplaintById = async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id)
-      .populate('createdBy', 'name email role');
+      .populate('createdBy', 'name email role')
+      .populate('resolution.resolvedBy', 'name email role');
     
     if (!complaint) {
       return res.status(404).json({ message: 'Complaint not found' });

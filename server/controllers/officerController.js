@@ -17,7 +17,8 @@ const getOfficerComplaints = async (req, res) => {
 const getOfficerComplaintById = async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id)
-      .populate('createdBy', 'name email role');
+      .populate('createdBy', 'name email role')
+      .populate('resolution.resolvedBy', 'name email role');
     
     if (!complaint) {
       return res.status(404).json({ message: 'Complaint not found' });
@@ -56,8 +57,44 @@ const updateComplaintStatus = async (req, res) => {
   }
 };
 
+// Resolve complaint with photo and notes
+const resolveComplaint = async (req, res) => {
+  try {
+    const { notes } = req.body;
+    let afterImageUrl = null;
+    
+    if (req.file) {
+      afterImageUrl = req.file.path; // Cloudinary image URL
+    }
+
+    if (!afterImageUrl || !notes) {
+      return res.status(400).json({ message: 'After photo and resolution notes are required' });
+    }
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({ message: 'Complaint not found' });
+    }
+
+    complaint.status = 'Resolved';
+    complaint.resolution = {
+      afterImageUrl,
+      notes,
+      resolvedBy: req.user._id,
+      resolvedAt: new Date()
+    };
+
+    const updatedComplaint = await complaint.save();
+    res.status(200).json(updatedComplaint);
+  } catch (error) {
+    console.error('Error resolving complaint:', error);
+    res.status(500).json({ message: 'Failed to resolve complaint' });
+  }
+};
+
 module.exports = {
   getOfficerComplaints,
   getOfficerComplaintById,
   updateComplaintStatus,
+  resolveComplaint,
 };

@@ -174,21 +174,25 @@ const ComplaintDetails = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-gray-800 p-2 rounded-lg border border-gray-700">
                         <h4 className="text-xs font-semibold text-gray-500 mb-2 uppercase text-center">Before</h4>
-                        <img src={complaint.imageUrl} alt="Before" className="w-full h-32 object-cover rounded opacity-80" />
+                        <img src={complaint.imageUrl} alt="Before" className="w-full h-48 object-cover rounded opacity-80" />
                       </div>
                       <div className="bg-gray-800 p-2 rounded-lg border border-green-900/50">
                         <h4 className="text-xs font-semibold text-green-500 mb-2 uppercase text-center">After</h4>
-                        <div className="w-full h-32 bg-gray-700 rounded flex items-center justify-center text-gray-500 text-sm">
-                          Resolution Photo
-                        </div>
+                        {complaint.resolution?.afterImageUrl ? (
+                          <img src={complaint.resolution.afterImageUrl} alt="After" className="w-full h-48 object-cover rounded" />
+                        ) : (
+                          <div className="w-full h-48 bg-gray-700 rounded flex items-center justify-center text-gray-500 text-sm">
+                            No Photo Provided
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="bg-gray-700/30 p-5 rounded-lg border border-gray-700/50">
                       <h3 className="text-sm font-semibold text-gray-400 mb-2">Resolution Notes</h3>
-                      <p className="text-gray-300 text-sm">Placeholder for official resolution notes provided by the officer.</p>
+                      <p className="text-gray-300 text-sm">{complaint.resolution?.notes || 'No notes provided.'}</p>
                       <div className="mt-4 pt-4 border-t border-gray-700/50 flex flex-wrap justify-between text-xs text-gray-500">
-                        <span>Resolved By: Placeholder Officer</span>
-                        <span>Resolved Date: Placeholder Date</span>
+                        <span>Resolved By: {complaint.resolution?.resolvedBy?.name || 'Officer'}</span>
+                        <span>Resolved Date: {complaint.resolution?.resolvedAt ? new Date(complaint.resolution.resolvedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown'}</span>
                       </div>
                     </div>
                   </div>

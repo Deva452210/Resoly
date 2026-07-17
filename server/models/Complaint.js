@@ -27,6 +27,12 @@ const complaintSchema = new mongoose.Schema(
       required: true,
     },
     aiGenerated: { type: Boolean, default: true },
+    resolution: {
+      afterImageUrl: { type: String },
+      notes: { type: String },
+      resolvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      resolvedAt: { type: Date },
+    },
   },
   { timestamps: true }
 );

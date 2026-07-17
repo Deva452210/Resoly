@@ -10,19 +10,25 @@ const OfficerComplaintDetails = () => {
   const [status, setStatus] = useState('');
   const [updating, setUpdating] = useState(false);
 
+  // Resolution state
+  const [afterImage, setAfterImage] = useState(null);
+  const [notes, setNotes] = useState('');
+
+  const fetchComplaint = async () => {
+    try {
+      const res = await api.get(`/officer/complaints/${id}`);
+      setComplaint(res.data);
+      setStatus(res.data.status);
+    } catch (error) {
+      console.error('Error fetching officer complaint details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchComplaint = async () => {
-      try {
-        const res = await api.get(`/officer/complaints/${id}`);
-        setComplaint(res.data);
-        setStatus(res.data.status);
-      } catch (error) {
-        console.error('Error fetching officer complaint details:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchComplaint();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleStatusUpdate = async () => {
@@ -34,8 +40,33 @@ const OfficerComplaintDetails = () => {
     } catch (error) {
       console.error('Error updating status:', error);
       alert('Failed to update status.');
-      // Revert select back to current state if failed
       setStatus(complaint.status);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleResolutionSubmit = async () => {
+    if (!afterImage || !notes) {
+      alert('Please provide an after photo and resolution notes.');
+      return;
+    }
+    
+    setUpdating(true);
+    try {
+      const formData = new FormData();
+      formData.append('afterImage', afterImage);
+      formData.append('notes', notes);
+
+      await api.patch(`/officer/complaints/${id}/resolve`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      alert('Complaint resolved successfully!');
+      fetchComplaint(); // Refresh data to show updated resolution
+    } catch (error) {
+      console.error('Error resolving complaint:', error);
+      alert('Failed to resolve complaint.');
     } finally {
       setUpdating(false);
     }
@@ -84,7 +115,14 @@ const OfficerComplaintDetails = () => {
 
         {/* Content Section */}
         <div className="p-6 md:p-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-6">{complaint.title}</h1>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">{complaint.title}</h1>
+            {complaint.status === 'Resolved' && (
+              <span className="px-4 py-2 rounded-full bg-green-900/50 text-green-400 font-medium text-sm border border-green-800">
+                Resolved
+              </span>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <div className="space-y-4">
@@ -136,31 +174,100 @@ const OfficerComplaintDetails = () => {
           </div>
 
           {/* Officer Management Section */}
-          <div className="bg-gray-900 p-6 rounded-lg border border-purple-500">
-            <h2 className="text-xl font-bold text-white mb-4">Manage Complaint Status</h2>
-            <div className="flex flex-col sm:flex-row gap-4 items-end">
-              <div className="flex-grow w-full">
-                <label className="block text-gray-400 text-sm font-medium mb-2">Current Status</label>
-                <select 
-                  value={status} 
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 appearance-none"
-                >
-                  <option value="Reported">Reported</option>
-                  <option value="Assigned">Assigned</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Resolved">Resolved</option>
-                </select>
+          {complaint.status !== 'Resolved' && (
+            <div className="bg-gray-900 p-6 rounded-lg border border-purple-500 animate-fadeIn">
+              <h2 className="text-xl font-bold text-white mb-4">Manage Complaint Status</h2>
+              
+              <div className="flex flex-col sm:flex-row gap-4 items-end mb-6">
+                <div className="flex-grow w-full">
+                  <label className="block text-gray-400 text-sm font-medium mb-2">Current Status</label>
+                  <select 
+                    value={status} 
+                    onChange={(e) => setStatus(e.target.value)}
+                    className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 appearance-none"
+                  >
+                    <option value="Reported">Reported</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
+                </div>
+                {status !== 'Resolved' && (
+                  <button 
+                    onClick={handleStatusUpdate}
+                    disabled={updating || status === complaint.status}
+                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                  >
+                    {updating ? 'Saving...' : 'Save Status'}
+                  </button>
+                )}
               </div>
-              <button 
-                onClick={handleStatusUpdate}
-                disabled={updating || status === complaint.status}
-                className="w-full sm:w-auto px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
-              >
-                {updating ? 'Saving...' : 'Save Status'}
-              </button>
+
+              {/* Resolution Workflow */}
+              {status === 'Resolved' && (
+                <div className="border-t border-gray-700 pt-6 mt-2 space-y-4 animate-fadeIn">
+                  <h3 className="text-lg font-bold text-green-400 mb-2">Resolution Requirements</h3>
+                  
+                  <div>
+                    <label className="block text-gray-300 text-sm font-medium mb-2">Upload After Photo *</label>
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={(e) => setAfterImage(e.target.files[0])}
+                      className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-purple-300 hover:file:bg-gray-600"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-gray-300 text-sm font-medium mb-2">Resolution Notes *</label>
+                    <textarea 
+                      rows="3"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Detail the actions taken to resolve this issue..."
+                      className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600"
+                    ></textarea>
+                  </div>
+
+                  <button 
+                    onClick={handleResolutionSubmit}
+                    disabled={updating}
+                    className="w-full px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {updating ? 'Processing...' : 'Complete Resolution'}
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
+          )}
+
+          {/* Read-Only Resolution State */}
+          {complaint.status === 'Resolved' && complaint.resolution && (
+            <div className="bg-gray-900 p-6 rounded-lg border border-green-500 animate-fadeIn mt-8">
+              <h2 className="text-xl font-bold text-green-400 mb-6">Resolution Details</h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-800 p-2 rounded-lg border border-gray-700">
+                  <h4 className="text-xs font-semibold text-gray-500 mb-2 uppercase text-center">Before</h4>
+                  <img src={complaint.imageUrl} alt="Before" className="w-full h-48 object-cover rounded" />
+                </div>
+                <div className="bg-gray-800 p-2 rounded-lg border border-green-900/50">
+                  <h4 className="text-xs font-semibold text-green-500 mb-2 uppercase text-center">After</h4>
+                  <img src={complaint.resolution.afterImageUrl} alt="After" className="w-full h-48 object-cover rounded" />
+                </div>
+              </div>
+              
+              <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-400 mb-2">Resolution Notes</h3>
+                <p className="text-gray-200">{complaint.resolution.notes}</p>
+                
+                <div className="mt-4 pt-4 border-t border-gray-700 flex flex-wrap justify-between text-xs text-gray-500">
+                  <span>Resolved By: {complaint.resolution.resolvedBy?.name || 'Officer'}</span>
+                  <span>Resolved Date: {new Date(complaint.resolution.resolvedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       </div>
