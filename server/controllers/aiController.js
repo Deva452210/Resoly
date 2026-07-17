@@ -25,16 +25,16 @@ const generateComplaintData = async (req, res) => {
     }
 
     const prompt = `
-Analyze this image and the provided context, then return a JSON object with the following schema exactly. Do not include markdown formatting, markdown blocks, explanations, or any extra text. Return ONLY raw valid JSON.
+Analyze this image and the provided context, then return a JSON object with the following schema exactly. Do not include markdown formatting, markdown blocks, explanations, or any extra text. Return ONLY raw valid JSON. Ensure all string values are properly escaped for valid JSON (e.g., escape double quotes inside strings).
 
 Context:
-- User-provided Title: ${title || 'None provided'}
-- Additional Details: ${additionalDetails || 'None provided'}
+- User-provided Title: ${title ? title.replace(/"/g, '\\"') : 'None provided'}
+- Additional Details: ${additionalDetails ? additionalDetails.replace(/"/g, '\\"') : 'None provided'}
 - Location: ${locationContext}
 
 Schema:
 {
-  "title": "A short, descriptive title for the complaint (use user-provided title if appropriate)",
+  "title": "A short, descriptive title for the complaint",
   "description": "Detailed description of the issue in the image, incorporating additional details",
   "category": "One of: Infrastructure, Sanitation, Traffic, Other",
   "department": "The relevant government department",
@@ -67,7 +67,14 @@ Schema:
     // Strip possible markdown if model ignores responseMimeType
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const parsedData = JSON.parse(resultText);
+    let parsedData;
+    try {
+      parsedData = JSON.parse(resultText);
+    } catch (e) {
+      console.error('JSON Parse Error. Raw Text from Gemini:', resultText);
+      throw e;
+    }
+    
     parsedData.imageUrl = imageUrl;
 
     res.status(200).json(parsedData);
