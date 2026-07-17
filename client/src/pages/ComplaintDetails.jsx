@@ -6,6 +6,7 @@ const ComplaintDetails = () => {
   const { id } = useParams();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('progress');
 
   useEffect(() => {
     const fetchComplaint = async () => {
@@ -38,6 +39,10 @@ const ComplaintDetails = () => {
     );
   }
 
+  // Helper for Stepper logic
+  const steps = ['Reported', 'Assigned', 'In Progress', 'Resolved'];
+  const currentStepIndex = steps.indexOf(complaint.status) !== -1 ? steps.indexOf(complaint.status) : 0;
+
   return (
     <div className="container mx-auto p-4 py-8 max-w-4xl">
       <div className="mb-6">
@@ -63,12 +68,7 @@ const ComplaintDetails = () => {
 
         {/* Content Section */}
         <div className="p-6 md:p-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <h1 className="text-2xl md:text-3xl font-bold text-white">{complaint.title}</h1>
-            <span className="px-4 py-2 rounded-full bg-gray-700 text-white font-medium text-sm border border-gray-600">
-              Status: {complaint.status}
-            </span>
-          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">{complaint.title}</h1>
 
           <div className="flex flex-wrap gap-3 mb-8">
             <span className="px-3 py-1 rounded bg-blue-900/50 text-blue-300 border border-blue-800 text-sm font-medium">Category: {complaint.category}</span>
@@ -82,7 +82,122 @@ const ComplaintDetails = () => {
             <span className="px-3 py-1 rounded bg-purple-900/50 text-purple-300 border border-purple-800 text-sm font-medium">Department: {complaint.department}</span>
           </div>
 
-          <div className="space-y-6 text-gray-300">
+          {/* Tabs */}
+          <div className="flex border-b border-gray-700 mb-6">
+            <button
+              onClick={() => setActiveTab('progress')}
+              className={`pb-3 px-4 font-medium transition-colors ${
+                activeTab === 'progress' 
+                ? 'text-purple-400 border-b-2 border-purple-500' 
+                : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              Progress
+            </button>
+            <button
+              onClick={() => setActiveTab('resolution')}
+              className={`pb-3 px-4 font-medium transition-colors ${
+                activeTab === 'resolution' 
+                ? 'text-purple-400 border-b-2 border-purple-500' 
+                : 'text-gray-400 hover:text-gray-200'
+              }`}
+            >
+              Resolution
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          <div className="mb-8 min-h-[150px]">
+            {activeTab === 'progress' ? (
+              <div className="space-y-8 animate-fadeIn">
+                {/* Stepper */}
+                <div className="relative pt-2">
+                  <div className="absolute top-5 left-0 w-full h-1 bg-gray-700 -z-10"></div>
+                  <div className="flex justify-between relative z-10">
+                    {steps.map((step, index) => {
+                      let circleClasses = "w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-colors";
+                      let textClasses = "text-xs font-medium mt-2 text-center absolute -bottom-6 w-24 -ml-8";
+                      
+                      if (index < currentStepIndex) {
+                        // Completed
+                        circleClasses += " bg-green-900 border-green-500 text-green-400";
+                        textClasses += " text-green-400";
+                      } else if (index === currentStepIndex) {
+                        // Current
+                        circleClasses += " bg-purple-900 border-purple-500 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)]";
+                        textClasses += " text-purple-300";
+                      } else {
+                        // Upcoming
+                        circleClasses += " bg-gray-800 border-gray-600 text-gray-500";
+                        textClasses += " text-gray-500";
+                      }
+
+                      return (
+                        <div key={step} className="flex flex-col items-center relative">
+                          <div className={circleClasses}>
+                            {index < currentStepIndex ? '✓' : index + 1}
+                          </div>
+                          <span className={textClasses}>{step}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Timeline */}
+                <div className="mt-12 bg-gray-700/30 p-5 rounded-lg border border-gray-700/50">
+                  <h3 className="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider">Timeline Activity</h3>
+                  <div className="space-y-4">
+                    <div className="flex gap-4">
+                      <div className="w-24 flex-shrink-0 text-sm text-gray-400 pt-1">
+                        {new Date(complaint.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </div>
+                      <div className="relative pb-4 pl-4 border-l border-gray-600 flex-grow">
+                        <div className="absolute w-2 h-2 bg-purple-500 rounded-full -left-[4.5px] top-1.5"></div>
+                        <p className="text-white font-medium">Complaint {complaint.status}</p>
+                        <p className="text-sm text-gray-400 mt-1">Status updated by the system.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="animate-fadeIn">
+                {complaint.status !== 'Resolved' ? (
+                  <div className="bg-gray-700/30 p-8 rounded-lg border border-gray-700/50 text-center flex flex-col items-center justify-center min-h-[200px]">
+                    <span className="text-4xl mb-3 opacity-50">⏳</span>
+                    <p className="text-gray-400 font-medium text-lg">This complaint has not been resolved yet.</p>
+                    <p className="text-gray-500 text-sm mt-2">Check back later or track progress in the Progress tab.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="bg-gray-800 p-2 rounded-lg border border-gray-700">
+                        <h4 className="text-xs font-semibold text-gray-500 mb-2 uppercase text-center">Before</h4>
+                        <img src={complaint.imageUrl} alt="Before" className="w-full h-32 object-cover rounded opacity-80" />
+                      </div>
+                      <div className="bg-gray-800 p-2 rounded-lg border border-green-900/50">
+                        <h4 className="text-xs font-semibold text-green-500 mb-2 uppercase text-center">After</h4>
+                        <div className="w-full h-32 bg-gray-700 rounded flex items-center justify-center text-gray-500 text-sm">
+                          Resolution Photo
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-gray-700/30 p-5 rounded-lg border border-gray-700/50">
+                      <h3 className="text-sm font-semibold text-gray-400 mb-2">Resolution Notes</h3>
+                      <p className="text-gray-300 text-sm">Placeholder for official resolution notes provided by the officer.</p>
+                      <div className="mt-4 pt-4 border-t border-gray-700/50 flex flex-wrap justify-between text-xs text-gray-500">
+                        <span>Resolved By: Placeholder Officer</span>
+                        <span>Resolved Date: Placeholder Date</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-6 text-gray-300 border-t border-gray-700 pt-6">
             <div>
               <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
               <p className="bg-gray-700/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">{complaint.description}</p>
