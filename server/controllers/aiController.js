@@ -1,6 +1,8 @@
 const { GoogleGenAI } = require('@google/genai');
 const axios = require('axios');
 const questionsData = require('../data/investigationQuestions.json');
+const Complaint = require('../models/Complaint');
+const ExecutiveSummary = require('../models/ExecutiveSummary');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -337,9 +339,87 @@ Return ONLY a valid JSON object matching this exact schema:
   }
 };
 
+const getLatestExecutiveSummary = async (req, res) => {
+  try {
+    const summary = await ExecutiveSummary.findOne().sort({ generatedAt: -1 });
+    res.status(200).json(summary);
+  } catch (error) {
+    console.error('Error fetching executive summary:', error);
+    res.status(500).json({ message: 'Failed to fetch executive summary' });
+  }
+};
+
+const generateExecutiveSummary = async (req, res) => {
+  try {
+    const complaints = await Complaint.find().populate('resolution.resolvedBy', 'name');
+    
+    // Condense the data to save tokens
+    const complaintData = complaints.map(c => ({
+      status: c.status,
+      category: c.category,
+      department: c.department,
+      priority: c.priority,
+      votes: c.verification ? c.verification.solvedVotes - c.verification.notSolvedVotes : 0,
+      escalated: c.status === 'Escalated',
+      resolved: c.status === 'Resolved',
+      aiAuditStatus: c.aiAudit ? c.aiAudit.status : null,
+      resolvedBy: c.resolution?.resolvedBy?.name || 'Unassigned'
+    }));
+
+    const prompt = `
+You are an expert AI Executive Assistant for a city's Higher Authority dashboard.
+Analyze the following summary of all civic complaints in the system and generate an Executive Brief.
+
+Complaint Data (JSON array):
+${JSON.stringify(complaintData)}
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "greeting": "A short, professional greeting (e.g. 'Good morning, Director. Here is your system overview.')",
+  "summary": "A 2-3 sentence high-level summary of the current system health and major bottlenecks",
+  "highlights": [
+    "Highlight 1 (e.g. 'Garbage collection has a high resolution rate.')",
+    "Highlight 2 (e.g. 'Road damage complaints are frequently escalating.')",
+    "Highlight 3"
+  ],
+  "recommendation": "A single strong recommendation for the authority to take action on"
+}
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: { responseMimeType: "application/json" }
+    });
+
+    let resultText = response.text;
+    resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+    if (!resultText.endsWith('}')) {
+      resultText += '\n}';
+    }
+
+    const parsedData = JSON.parse(resultText);
+
+    const newSummary = await ExecutiveSummary.create({
+      greeting: parsedData.greeting,
+      summary: parsedData.summary,
+      highlights: parsedData.highlights,
+      recommendation: parsedData.recommendation
+    });
+
+    res.status(200).json(newSummary);
+
+  } catch (error) {
+    console.error('Error generating executive summary:', error);
+    res.status(500).json({ message: 'Failed to generate executive summary' });
+  }
+};
+
 module.exports = {
   generateComplaintData,
   investigate,
   finalizeComplaint,
-  auditResolution
+  auditResolution,
+  getLatestExecutiveSummary,
+  generateExecutiveSummary
 };
