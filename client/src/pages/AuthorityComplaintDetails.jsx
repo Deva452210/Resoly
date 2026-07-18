@@ -1,11 +1,9 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../services/api';
-import { AuthContext } from '../contexts/AuthContext';
 
-const ComplaintDetails = () => {
+const AuthorityComplaintDetails = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('progress');
@@ -13,10 +11,10 @@ const ComplaintDetails = () => {
   useEffect(() => {
     const fetchComplaint = async () => {
       try {
-        const res = await api.get(`/complaints/${id}`);
+        const res = await api.get(`/authority/complaints/${id}`);
         setComplaint(res.data);
       } catch (error) {
-        console.error('Error fetching complaint details:', error);
+        console.error('Error fetching authority complaint details:', error);
       } finally {
         setLoading(false);
       }
@@ -27,7 +25,7 @@ const ComplaintDetails = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin h-12 w-12 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-blue-500 rounded-full border-t-transparent"></div>
       </div>
     );
   }
@@ -36,24 +34,25 @@ const ComplaintDetails = () => {
     return (
       <div className="container mx-auto p-4 text-center mt-10">
         <h2 className="text-2xl font-bold text-white mb-4">Complaint not found</h2>
-        <Link to="/feed" className="text-purple-400 hover:text-purple-300 underline">Back to Feed</Link>
+        <Link to="/authority-dashboard" className="text-blue-400 hover:text-blue-300 underline">Back to Dashboard</Link>
       </div>
     );
   }
 
-  // Helper for Stepper logic
   const steps = ['Reported', 'Assigned', 'In Progress', 'Resolved'];
-  const currentStepIndex = steps.indexOf(complaint.status) !== -1 ? steps.indexOf(complaint.status) : 0;
+  let currentStepIndex = steps.indexOf(complaint.status) !== -1 ? steps.indexOf(complaint.status) : 0;
+  if (complaint.status === 'Escalated') currentStepIndex = 3; // Escalated implies it was resolved
 
   return (
     <div className="container mx-auto p-4 py-8 max-w-4xl">
       <div className="mb-6">
-        <Link to="/feed" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 w-max">
-          <span>&larr;</span> Back to Feed
+        <Link to="/authority-dashboard" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 w-max">
+          <span>&larr;</span> Back to Dashboard
         </Link>
       </div>
 
       <div className="bg-gray-800 rounded-xl overflow-hidden shadow-2xl border border-gray-700">
+        
         {/* Media Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-b border-gray-700 bg-gray-900">
           <div className="p-4 flex flex-col justify-center">
@@ -70,7 +69,14 @@ const ComplaintDetails = () => {
 
         {/* Content Section */}
         <div className="p-6 md:p-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">{complaint.title}</h1>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">{complaint.title}</h1>
+            {complaint.status === 'Escalated' && (
+              <span className="px-4 py-2 rounded-full bg-red-900 text-red-300 font-bold text-sm border border-red-500 animate-pulse">
+                ESCALATED
+              </span>
+            )}
+          </div>
 
           <div className="flex flex-wrap gap-3 mb-8">
             <span className="px-3 py-1 rounded bg-blue-900/50 text-blue-300 border border-blue-800 text-sm font-medium">Category: {complaint.category}</span>
@@ -90,7 +96,7 @@ const ComplaintDetails = () => {
               onClick={() => setActiveTab('progress')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'progress' 
-                ? 'text-purple-400 border-b-2 border-purple-500' 
+                ? 'text-blue-400 border-b-2 border-blue-500' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -100,7 +106,7 @@ const ComplaintDetails = () => {
               onClick={() => setActiveTab('resolution')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'resolution' 
-                ? 'text-purple-400 border-b-2 border-purple-500' 
+                ? 'text-blue-400 border-b-2 border-blue-500' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -118,11 +124,21 @@ const ComplaintDetails = () => {
                 <span className="text-lg">⚠️</span> Escalation Report
               </button>
             )}
+            <button
+              onClick={() => setActiveTab('ai_insights')}
+              className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'ai_insights' 
+                ? 'text-purple-400 border-b-2 border-purple-500' 
+                : 'text-purple-500/70 hover:text-purple-400'
+              }`}
+            >
+              <span className="text-lg">✨</span> AI Insights
+            </button>
           </div>
 
           {/* Tab Content */}
           <div className="mb-8 min-h-[150px]">
-            {activeTab === 'progress' ? (
+            {activeTab === 'progress' && (
               <div className="space-y-8 animate-fadeIn">
                 {/* Stepper */}
                 <div className="relative pt-2">
@@ -133,15 +149,12 @@ const ComplaintDetails = () => {
                       let textClasses = "text-xs font-medium mt-2 text-center absolute -bottom-6 w-24 -ml-8";
                       
                       if (index < currentStepIndex) {
-                        // Completed
                         circleClasses += " bg-green-900 border-green-500 text-green-400";
                         textClasses += " text-green-400";
                       } else if (index === currentStepIndex) {
-                        // Current
-                        circleClasses += " bg-purple-900 border-purple-500 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)]";
-                        textClasses += " text-purple-300";
+                        circleClasses += " bg-blue-900 border-blue-500 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]";
+                        textClasses += " text-blue-300";
                       } else {
-                        // Upcoming
                         circleClasses += " bg-gray-800 border-gray-600 text-gray-500";
                         textClasses += " text-gray-500";
                       }
@@ -157,31 +170,14 @@ const ComplaintDetails = () => {
                     })}
                   </div>
                 </div>
-
-                {/* Timeline */}
-                <div className="mt-12 bg-gray-700/30 p-5 rounded-lg border border-gray-700/50">
-                  <h3 className="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider">Timeline Activity</h3>
-                  <div className="space-y-4">
-                    <div className="flex gap-4">
-                      <div className="w-24 flex-shrink-0 text-sm text-gray-400 pt-1">
-                        {new Date(complaint.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
-                      </div>
-                      <div className="relative pb-4 pl-4 border-l border-gray-600 flex-grow">
-                        <div className="absolute w-2 h-2 bg-purple-500 rounded-full -left-[4.5px] top-1.5"></div>
-                        <p className="text-white font-medium">Complaint {complaint.status}</p>
-                        <p className="text-sm text-gray-400 mt-1">Status updated by the system.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
-            ) : activeTab === 'resolution' ? (
+            )}
+
+            {activeTab === 'resolution' && (
               <div className="animate-fadeIn">
-                {complaint.status !== 'Resolved' ? (
-                  <div className="bg-gray-700/30 p-8 rounded-lg border border-gray-700/50 text-center flex flex-col items-center justify-center min-h-[200px]">
-                    <span className="text-4xl mb-3 opacity-50">⏳</span>
-                    <p className="text-gray-400 font-medium text-lg">This complaint has not been resolved yet.</p>
-                    <p className="text-gray-500 text-sm mt-2">Check back later or track progress in the Progress tab.</p>
+                {complaint.status !== 'Resolved' && complaint.status !== 'Escalated' ? (
+                  <div className="bg-gray-700/30 p-8 rounded-lg border border-gray-700/50 text-center">
+                    <p className="text-gray-400 font-medium">This complaint has not been resolved yet.</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -209,52 +205,12 @@ const ComplaintDetails = () => {
                         <span>Resolved Date: {complaint.resolution?.resolvedAt ? new Date(complaint.resolution.resolvedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Unknown'}</span>
                       </div>
                     </div>
-
-                    {/* Verification Block */}
-                    <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6">
-                      <h3 className="text-lg font-bold text-white mb-2 text-center">Was this issue actually resolved?</h3>
-                      <div className="flex justify-center gap-4 mt-4">
-                        <button 
-                          onClick={async () => {
-                            try {
-                              const res = await api.post(`/complaints/${id}/verify`, { vote: 'solved' });
-                              setComplaint(res.data);
-                            } catch (e) {
-                              alert(e.response?.data?.message || 'Failed to verify');
-                            }
-                          }}
-                          className={`flex items-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium ${
-                            complaint.verification?.votes?.find(v => v.user === user._id)?.vote === 'solved'
-                            ? 'bg-green-600 text-white border-green-500'
-                            : 'bg-green-900/50 hover:bg-green-800 text-green-400 border-green-700'
-                          }`}
-                        >
-                          👍 Solved ({complaint.verification?.solvedVotes || 0})
-                        </button>
-                        <button 
-                          onClick={async () => {
-                            try {
-                              const res = await api.post(`/complaints/${id}/verify`, { vote: 'not_solved' });
-                              setComplaint(res.data);
-                            } catch (e) {
-                              alert(e.response?.data?.message || 'Failed to verify');
-                            }
-                          }}
-                          className={`flex items-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium ${
-                            complaint.verification?.votes?.find(v => v.user === user._id)?.vote === 'not_solved'
-                            ? 'bg-red-600 text-white border-red-500'
-                            : 'bg-red-900/50 hover:bg-red-800 text-red-400 border-red-700'
-                          }`}
-                        >
-                          👎 Not Solved ({complaint.verification?.notSolvedVotes || 0})
-                        </button>
-                      </div>
-                    </div>
-
                   </div>
                 )}
               </div>
-            ) : (
+            )}
+
+            {activeTab === 'escalation' && (
               <div className="animate-fadeIn bg-red-900/20 p-6 rounded-lg border border-red-900/50">
                 <div className="flex items-center gap-3 mb-4 border-b border-red-900/30 pb-4">
                   <span className="text-3xl">⚠️</span>
@@ -263,41 +219,108 @@ const ComplaintDetails = () => {
                     <p className="text-sm text-red-300/70">Generated at {new Date(complaint.escalation?.generatedAt).toLocaleString()}</p>
                   </div>
                 </div>
+                
+                <div className="flex justify-between items-center mb-6 bg-red-900/30 p-3 rounded border border-red-900/50">
+                  <span className="text-red-400 font-medium">Citizen Verification Split</span>
+                  <div className="flex gap-4 text-sm font-bold">
+                    <span className="text-green-500">👍 {complaint.verification?.solvedVotes || 0}</span>
+                    <span className="text-red-500">👎 {complaint.verification?.notSolvedVotes || 0}</span>
+                  </div>
+                </div>
+
                 <div className="text-gray-300 space-y-4 leading-relaxed whitespace-pre-wrap">
                   {complaint.escalation?.report}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'ai_insights' && (
+              <div className="animate-fadeIn space-y-4">
+                <div className="bg-purple-900/20 p-6 rounded-lg border border-purple-900/50 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-purple-400">Executive AI Analysis</h3>
+                    <p className="text-sm text-purple-300/70 mt-1">Deep analysis powered by Gemini.</p>
+                  </div>
+                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium transition-colors text-sm" disabled>
+                    Generate Full Report
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Complaint Summary</h4>
+                    <p className="text-gray-300 text-sm">AI will summarize the history of this complaint here.</p>
+                  </div>
+                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Officer Performance</h4>
+                    <p className="text-gray-300 text-sm">AI will analyze the assigned officer's resolution quality.</p>
+                  </div>
+                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
+                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Citizen Sentiment</h4>
+                    <div className="w-full bg-gray-700 rounded-full h-2.5 mt-4">
+                      <div className="bg-red-500 h-2.5 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                    <p className="text-xs text-red-400 mt-2">Highly Dissatisfied (Placeholder)</p>
+                  </div>
+                  <div className="bg-gray-800 p-5 rounded-lg border border-purple-900/50">
+                    <h4 className="text-sm font-semibold text-purple-400 mb-2">Recommended Action</h4>
+                    <p className="text-purple-300 text-sm italic">"Reassign to senior infrastructure team for immediate pothole fill."</p>
+                  </div>
                 </div>
               </div>
             )}
           </div>
 
           <div className="space-y-6 text-gray-300 border-t border-gray-700 pt-6">
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
-              <p className="bg-gray-700/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">{complaint.description}</p>
-            </div>
+            {/* AI Investigation Section */}
+            {complaint.aiInvestigation && (
+              <div className="mb-6 bg-purple-900/10 border border-purple-500/30 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                  <span className="text-xl">🤖</span> AI Investigation Profile
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
+                    <span className="text-white font-medium">{complaint.aiInvestigation.issueType}</span>
+                    <span className="ml-2 text-xs text-gray-400 border border-gray-600 rounded px-2 py-0.5">Confidence: {complaint.aiInvestigation.confidence}</span>
+                  </div>
+                  {complaint.aiInvestigation.estimatedImpact && (
+                    <div>
+                      <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
+                      <span className="text-red-300 font-medium">{complaint.aiInvestigation.estimatedImpact}</span>
+                    </div>
+                  )}
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-700/30 p-4 rounded-lg">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 mb-1">Location Details</h3>
-                {complaint.location ? (
-                  <ul className="space-y-1">
-                    {complaint.location.area && <li><span className="text-gray-500">Area:</span> {complaint.location.area}</li>}
-                    {complaint.location.city && <li><span className="text-gray-500">City:</span> {complaint.location.city}</li>}
-                    {complaint.location.landmark && <li><span className="text-gray-500">Landmark:</span> {complaint.location.landmark}</li>}
-                    {complaint.location.latitude && <li><span className="text-gray-500">Coordinates:</span> {complaint.location.latitude}, {complaint.location.longitude}</li>}
-                  </ul>
-                ) : (
-                  <p>Location not provided</p>
+                {complaint.aiInvestigation.questionsAndAnswers?.length > 0 && (
+                  <div className="mb-6">
+                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
+                    <div className="space-y-3 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                      {complaint.aiInvestigation.questionsAndAnswers.map((qa, idx) => (
+                        <div key={idx} className="text-sm">
+                          <span className="block text-gray-400">Q: {qa.question}</span>
+                          <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-purple-500 pl-3">A: {qa.answer}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {complaint.aiInvestigation.recommendedAction && (
+                  <div>
+                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
+                    <p className="text-purple-200 bg-purple-900/20 p-3 rounded text-sm italic border border-purple-500/20">
+                      {complaint.aiInvestigation.recommendedAction}
+                    </p>
+                  </div>
                 )}
               </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 mb-1">Report Information</h3>
-                <ul className="space-y-1">
-                  <li><span className="text-gray-500">Reported By:</span> {complaint.createdBy?.name || 'Citizen'}</li>
-                  <li><span className="text-gray-500">Date:</span> {new Date(complaint.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</li>
-                  <li><span className="text-gray-500">AI Assisted:</span> {complaint.aiGenerated ? 'Yes' : 'No'}</li>
-                </ul>
-              </div>
+            )}
+
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-2">Original Description</h3>
+              <p className="bg-gray-700/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">{complaint.description}</p>
             </div>
           </div>
         </div>
@@ -306,4 +329,4 @@ const ComplaintDetails = () => {
   );
 };
 
-export default ComplaintDetails;
+export default AuthorityComplaintDetails;

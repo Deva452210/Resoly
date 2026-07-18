@@ -1,10 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { upload } = require('../config/cloudinary');
-const { generateComplaintData } = require('../controllers/aiController');
+const multer = require('multer');
 const { protect } = require('../middleware/authMiddleware');
+const { generateComplaintData, investigate, finalizeComplaint } = require('../controllers/aiController');
+const { storage } = require('../config/cloudinary');
 
-// Using protect middleware to ensure only authenticated users can access AI route
+const upload = multer({ storage });
+
 router.post('/generate', protect, upload.single('image'), generateComplaintData);
+router.post('/investigate', protect, upload.single('image'), investigate);
+router.post('/finalize-complaint', protect, upload.none(), finalizeComplaint);
 
 module.exports = router;

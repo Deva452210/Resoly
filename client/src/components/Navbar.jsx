@@ -29,6 +29,12 @@ const Navbar = () => {
               {user.role === 'officer' && (
                 <Link to="/officer-dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link>
               )}
+              {user.role === 'authority' && (
+                <>
+                  <Link to="/authority-dashboard" className="hover:text-blue-400 transition-colors">Dashboard</Link>
+                  <Link to="/authority-analytics" className="hover:text-blue-400 transition-colors">Analytics</Link>
+                </>
+              )}
               <span className="text-gray-400 text-sm ml-4">Hello, {user.name}</span>
               <button 
                 onClick={handleLogout} 

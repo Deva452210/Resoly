@@ -1,0 +1,95 @@
+{
+  "road_damage": [
+    {
+      "id": "rd_1",
+      "text": "How deep does the pothole or damage appear to be?",
+      "type": "Single Choice",
+      "options": ["Shallow (Surface only)", "Medium (A few inches)", "Deep (Sub-base visible)"]
+    },
+    {
+      "id": "rd_2",
+      "text": "Is the damage currently affecting traffic flow?",
+      "type": "Yes/No"
+    },
+    {
+      "id": "rd_3",
+      "text": "Are there any loose rocks or debris around the damaged area?",
+      "type": "Yes/No"
+    }
+  ],
+  "garbage": [
+    {
+      "id": "gb_1",
+      "text": "What type of waste is primarily visible?",
+      "type": "Multiple Choice",
+      "options": ["Household waste", "Construction debris", "Plastic waste", "Organic/Food waste"]
+    },
+    {
+      "id": "gb_2",
+      "text": "Is the waste blocking a pedestrian pathway or road?",
+      "type": "Yes/No"
+    },
+    {
+      "id": "gb_3",
+      "text": "Please provide any additional details about the smell or hazards (if any):",
+      "type": "Short Text"
+    }
+  ],
+  "drainage": [
+    {
+      "id": "dr_1",
+      "text": "Is the water stagnant or actively overflowing?",
+      "type": "Single Choice",
+      "options": ["Stagnant", "Actively overflowing", "Draining slowly"]
+    },
+    {
+      "id": "dr_2",
+      "text": "Does the overflow seem to be caused by a visible blockage?",
+      "type": "Yes/No"
+    },
+    {
+      "id": "dr_3",
+      "text": "Is the water entering nearby properties or shops?",
+      "type": "Yes/No"
+    }
+  ],
+  "streetlight": [
+    {
+      "id": "sl_1",
+      "text": "What is the specific issue with the streetlight?",
+      "type": "Single Choice",
+      "options": ["Completely off", "Flickering", "Dim", "Physically damaged"]
+    },
+    {
+      "id": "sl_2",
+      "text": "Are multiple streetlights out in the same area?",
+      "type": "Yes/No"
+    }
+  ],
+  "water_leak": [
+    {
+      "id": "wl_1",
+      "text": "How severe is the leak?",
+      "type": "Single Choice",
+      "options": ["Minor drip", "Steady flow", "High pressure burst"]
+    },
+    {
+      "id": "wl_2",
+      "text": "Is the leak coming from a public pipe or private property boundary?",
+      "type": "Single Choice",
+      "options": ["Public pipe/road", "Private boundary", "Not sure"]
+    }
+  ],
+  "default": [
+    {
+      "id": "df_1",
+      "text": "Can you describe the issue in a few more words?",
+      "type": "Short Text"
+    },
+    {
+      "id": "df_2",
+      "text": "Is this issue posing an immediate danger to the public?",
+      "type": "Yes/No"
+    }
+  ]
+}

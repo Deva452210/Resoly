@@ -3,13 +3,22 @@ const Complaint = require('../models/Complaint');
 // Create a new complaint
 const createComplaint = async (req, res) => {
   try {
-    const { title, description, category, department, priority, imageUrl, locationStr } = req.body;
+    const { title, description, category, department, priority, severity, imageUrl, locationStr, aiInvestigation } = req.body;
     let videoUrl = null;
     if (req.file) {
       videoUrl = req.file.path; // Cloudinary video URL
     }
 
     const location = locationStr ? JSON.parse(locationStr) : {};
+    
+    let parsedAiInvestigation;
+    if (aiInvestigation) {
+      try {
+        parsedAiInvestigation = JSON.parse(aiInvestigation);
+      } catch (e) {
+        console.error('Error parsing aiInvestigation:', e);
+      }
+    }
 
     const newComplaint = new Complaint({
       title,
@@ -17,9 +26,11 @@ const createComplaint = async (req, res) => {
       category,
       department,
       priority,
+      severity,
       imageUrl,
       videoUrl,
       location,
+      aiInvestigation: parsedAiInvestigation,
       createdBy: req.user._id, // Set by protect middleware
       status: 'Reported',
       aiGenerated: true,
@@ -80,24 +91,46 @@ const verifyComplaint = async (req, res) => {
       return res.status(404).json({ message: 'Complaint not found' });
     }
 
-    if (complaint.status !== 'Resolved') {
+    if (complaint.status !== 'Resolved' && complaint.status !== 'Escalated') {
       return res.status(400).json({ message: 'Only resolved complaints can be verified' });
     }
 
-    if (complaint.verification.verifiedUsers.includes(req.user._id)) {
-      return res.status(400).json({ message: 'You have already verified this complaint' });
-    }
+    const userIdStr = req.user._id.toString();
+    const existingVoteIndex = complaint.verification.votes.findIndex(v => v.user.toString() === userIdStr);
 
-    if (vote === 'solved') {
-      complaint.verification.solvedVotes += 1;
+    if (existingVoteIndex !== -1) {
+      const existingVote = complaint.verification.votes[existingVoteIndex].vote;
+      
+      // If vote is the same, do nothing
+      if (existingVote === vote) {
+        return res.status(200).json(complaint);
+      }
+
+      // Update the vote
+      complaint.verification.votes[existingVoteIndex].vote = vote;
+
+      // Adjust counts
+      if (vote === 'solved') {
+        complaint.verification.solvedVotes += 1;
+        complaint.verification.notSolvedVotes -= 1;
+      } else {
+        complaint.verification.notSolvedVotes += 1;
+        complaint.verification.solvedVotes -= 1;
+      }
     } else {
-      complaint.verification.notSolvedVotes += 1;
+      // New vote
+      complaint.verification.votes.push({ user: req.user._id, vote });
+      if (vote === 'solved') {
+        complaint.verification.solvedVotes += 1;
+      } else {
+        complaint.verification.notSolvedVotes += 1;
+      }
     }
 
-    complaint.verification.verifiedUsers.push(req.user._id);
-
-    // AI Escalation Logic
-    if (complaint.verification.notSolvedVotes >= 3 && !complaint.escalation.generated) {
+    // AI Escalation Logic (Hackathon rule: >= 1 Not Solved)
+    if (complaint.verification.notSolvedVotes >= 1 && !complaint.escalation.generated) {
+      complaint.status = 'Escalated';
+      
       const { GoogleGenAI } = require('@google/genai');
       const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
       

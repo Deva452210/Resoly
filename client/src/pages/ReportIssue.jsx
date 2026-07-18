@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const ReportIssue = () => {
+  const navigate = useNavigate();
   // Input fields
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
@@ -97,15 +99,28 @@ const ReportIssue = () => {
       
       // Video is explicitly ignored during AI analysis, so we don't append it to the form.
 
-      const res = await api.post('/ai/generate', form, {
+      const res = await api.post('/ai/investigate', form, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setFormData(res.data);
-      setAiFinished(true);
+      // Navigate to the investigation page with the returned data
+      navigate('/ai-investigation', { 
+        state: { 
+          investigationData: res.data,
+          formContext: {
+            title: titleInput,
+            description: additionalDetails,
+            locationMode,
+            locationStr: locationMode === 'current' 
+              ? JSON.stringify({ latitude: lat, longitude: lng })
+              : JSON.stringify({ area, city, landmark })
+          }
+        } 
+      });
+
     } catch (error) {
       console.error('AI Generation Failed:', error);
-      alert('Failed to generate details. Make sure your API keys are valid.');
+      alert('Failed to start investigation. Make sure your API keys are valid.');
     } finally {
       setIsGenerating(false);
     }
@@ -284,50 +299,23 @@ const ReportIssue = () => {
 
         </div>
 
-        {/* RIGHT COLUMN: AI Generated Fields */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-purple-500 flex flex-col h-full relative">
-          
-          {isGenerating && (
-            <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm rounded-xl flex items-center justify-center z-10">
-              <div className="text-center">
-                <svg className="animate-spin h-10 w-10 text-purple-500 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <p className="text-purple-300 font-medium">Extracting details...</p>
-              </div>
-            </div>
-          )}
+        </div>
 
-          <h2 className="text-2xl font-bold mb-6 text-purple-400">AI Generated Details</h2>
-          
-          <form className="space-y-5 flex-grow flex flex-col" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-gray-400 text-sm font-medium mb-1">Title</label>
-              <input name="title" value={formData.title} onChange={handleInputChange} className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow" placeholder="Auto-generated title" />
-            </div>
-            
-            <div className="flex-grow flex flex-col">
-              <label className="block text-gray-400 text-sm font-medium mb-1">Description</label>
-              <textarea name="description" value={formData.description} onChange={handleInputChange} className="w-full flex-grow min-h-[150px] bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow" placeholder="Auto-generated description" />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-gray-400 text-sm font-medium mb-1">Category</label>
-                <input name="category" value={formData.category} onChange={handleInputChange} className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow" placeholder="e.g. Infrastructure" />
-              </div>
-              <div>
-                <label className="block text-gray-400 text-sm font-medium mb-1">Priority</label>
-                <input name="priority" value={formData.priority} onChange={handleInputChange} className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow" placeholder="e.g. High" />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-gray-400 text-sm font-medium mb-1">Department</label>
-              <input name="department" value={formData.department} onChange={handleInputChange} className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-shadow" placeholder="e.g. Public Works" />
-            </div>
-          </form>
+        {/* RIGHT COLUMN: Info Block (Replaced the direct generation form) */}
+        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-purple-500 flex flex-col justify-center text-center">
+          <span className="text-6xl mb-4 block">🤖</span>
+          <h2 className="text-2xl font-bold mb-4 text-purple-400">Resoly AI Investigator</h2>
+          <p className="text-gray-300 leading-relaxed mb-6">
+            Instead of just guessing the details, our AI will now analyze your photo and ask you a few quick questions to build a highly accurate, comprehensive report for the authorities.
+          </p>
+          <div className="bg-gray-700/50 p-4 rounded-lg">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase mb-2">How it works</h3>
+            <ul className="text-sm text-gray-300 space-y-2 text-left">
+              <li>1. We analyze your photo to detect the issue.</li>
+              <li>2. We ask you 2-3 specific questions.</li>
+              <li>3. We generate a professional civic complaint.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

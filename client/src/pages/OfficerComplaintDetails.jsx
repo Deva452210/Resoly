@@ -168,6 +168,52 @@ const OfficerComplaintDetails = () => {
             </div>
           </div>
 
+          {/* AI Investigation Section */}
+          {complaint.aiInvestigation && (
+            <div className="mb-8 bg-purple-900/10 border border-purple-500/30 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                <span className="text-xl">🤖</span> AI Investigation Profile
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
+                  <span className="text-white font-medium">{complaint.aiInvestigation.issueType}</span>
+                  <span className="ml-2 text-xs text-gray-400 border border-gray-600 rounded px-2 py-0.5">Confidence: {complaint.aiInvestigation.confidence}</span>
+                </div>
+                {complaint.aiInvestigation.estimatedImpact && (
+                  <div>
+                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
+                    <span className="text-red-300 font-medium">{complaint.aiInvestigation.estimatedImpact}</span>
+                  </div>
+                )}
+              </div>
+
+              {complaint.aiInvestigation.questionsAndAnswers?.length > 0 && (
+                <div className="mb-6">
+                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
+                  <div className="space-y-3 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
+                    {complaint.aiInvestigation.questionsAndAnswers.map((qa, idx) => (
+                      <div key={idx} className="text-sm">
+                        <span className="block text-gray-400">Q: {qa.question}</span>
+                        <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-purple-500 pl-3">A: {qa.answer}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {complaint.aiInvestigation.recommendedAction && (
+                <div>
+                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
+                  <p className="text-purple-200 bg-purple-900/20 p-3 rounded text-sm italic border border-purple-500/20">
+                    {complaint.aiInvestigation.recommendedAction}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="mb-8">
             <span className="block text-gray-500 text-sm font-medium mb-2">Description</span>
             <p className="bg-gray-700/50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed text-gray-300">{complaint.description}</p>

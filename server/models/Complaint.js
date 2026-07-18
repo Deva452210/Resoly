@@ -18,7 +18,7 @@ const complaintSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['Reported', 'Assigned', 'In Progress', 'Resolved'],
+      enum: ['Reported', 'Assigned', 'In Progress', 'Resolved', 'Escalated'],
       default: 'Reported',
     },
     createdBy: {
@@ -27,6 +27,17 @@ const complaintSchema = new mongoose.Schema(
       required: true,
     },
     aiGenerated: { type: Boolean, default: true },
+    severity: { type: String },
+    aiInvestigation: {
+      issueType: { type: String },
+      confidence: { type: String },
+      questionsAndAnswers: [{
+        question: { type: String },
+        answer: { type: String }
+      }],
+      estimatedImpact: { type: String },
+      recommendedAction: { type: String }
+    },
     resolution: {
       afterImageUrl: { type: String },
       notes: { type: String },
@@ -36,7 +47,10 @@ const complaintSchema = new mongoose.Schema(
     verification: {
       solvedVotes: { type: Number, default: 0 },
       notSolvedVotes: { type: Number, default: 0 },
-      verifiedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+      votes: [{
+        user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        vote: { type: String, enum: ['solved', 'not_solved'] }
+      }]
     },
     escalation: {
       generated: { type: Boolean, default: false },

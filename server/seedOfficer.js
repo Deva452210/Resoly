@@ -27,6 +27,21 @@ const seedOfficer = async () => {
       });
       console.log('Officer account successfully created!');
     }
+
+    const authEmail = 'authority@resoly.com';
+    const existingAuthority = await User.findOne({ email: authEmail });
+
+    if (existingAuthority) {
+      console.log('Authority account already exists.');
+    } else {
+      await User.create({
+        name: 'Higher Authority',
+        email: authEmail,
+        password: '12345678',
+        role: 'authority'
+      });
+      console.log('Authority account successfully created!');
+    }
   } catch (error) {
     console.error('Error seeding officer:', error.message);
   } finally {

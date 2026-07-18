@@ -10,6 +10,10 @@ import ComplaintDetails from './pages/ComplaintDetails';
 import OfficerDashboard from './pages/OfficerDashboard';
 import OfficerComplaintDetails from './pages/OfficerComplaintDetails';
 import ReportIssue from './pages/ReportIssue';
+import AuthorityDashboard from './pages/AuthorityDashboard';
+import AuthorityComplaintDetails from './pages/AuthorityComplaintDetails';
+import AuthorityAnalytics from './pages/AuthorityAnalytics';
+import AiInvestigation from './pages/AiInvestigation';
 
 function App() {
   return (
@@ -27,12 +31,20 @@ function App() {
               <Route path="/feed" element={<Feed />} />
               <Route path="/complaint/:id" element={<ComplaintDetails />} />
               <Route path="/report-issue" element={<ReportIssue />} />
+              <Route path="/ai-investigation" element={<AiInvestigation />} />
             </Route>
 
             {/* Officer Protected Routes */}
             <Route element={<ProtectedRoute allowedRoles={['officer']} />}>
               <Route path="/officer-dashboard" element={<OfficerDashboard />} />
               <Route path="/officer-complaint/:id" element={<OfficerComplaintDetails />} />
+            </Route>
+
+            {/* Authority Protected Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['authority']} />}>
+              <Route path="/authority-dashboard" element={<AuthorityDashboard />} />
+              <Route path="/authority-complaint/:id" element={<AuthorityComplaintDetails />} />
+              <Route path="/authority-analytics" element={<AuthorityAnalytics />} />
             </Route>
           </Routes>
         </div>

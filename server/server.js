@@ -13,12 +13,14 @@ const authRoutes = require('./routes/authRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const officerRoutes = require('./routes/officerRoutes');
+const authorityRoutes = require('./routes/authorityRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/officer', officerRoutes);
+app.use('/api/authority', authorityRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK' });
 });

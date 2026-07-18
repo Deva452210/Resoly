@@ -39,4 +39,12 @@ const officer = (req, res, next) => {
   }
 };
 
-module.exports = { protect, officer };
+const authority = (req, res, next) => {
+  if (req.user && req.user.role === 'authority') {
+    next();
+  } else {
+    res.status(403).json({ message: 'Not authorized as a higher authority' });
+  }
+};
+
+module.exports = { protect, officer, authority };
