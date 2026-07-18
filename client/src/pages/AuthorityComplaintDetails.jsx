@@ -125,14 +125,14 @@ const AuthorityComplaintDetails = () => {
               </button>
             )}
             <button
-              onClick={() => setActiveTab('ai_insights')}
+              onClick={() => setActiveTab('ai_audit')}
               className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${
-                activeTab === 'ai_insights' 
+                activeTab === 'ai_audit' 
                 ? 'text-purple-400 border-b-2 border-purple-500' 
                 : 'text-purple-500/70 hover:text-purple-400'
               }`}
             >
-              <span className="text-lg">✨</span> AI Insights
+              <span className="text-lg">🤖</span> AI Audit
             </button>
           </div>
 
@@ -234,39 +234,55 @@ const AuthorityComplaintDetails = () => {
               </div>
             )}
 
-            {activeTab === 'ai_insights' && (
-              <div className="animate-fadeIn space-y-4">
-                <div className="bg-purple-900/20 p-6 rounded-lg border border-purple-900/50 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-purple-400">Executive AI Analysis</h3>
-                    <p className="text-sm text-purple-300/70 mt-1">Deep analysis powered by Gemini.</p>
+            {activeTab === 'ai_audit' && (
+              <div className="animate-fadeIn">
+                {!complaint.aiAudit ? (
+                  <div className="bg-gray-700/30 p-8 rounded-lg border border-gray-700/50 text-center">
+                    <p className="text-gray-400 font-medium">No AI Audit was generated for this complaint.</p>
                   </div>
-                  <button className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium transition-colors text-sm" disabled>
-                    Generate Full Report
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
-                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Complaint Summary</h4>
-                    <p className="text-gray-300 text-sm">AI will summarize the history of this complaint here.</p>
-                  </div>
-                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
-                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Officer Performance</h4>
-                    <p className="text-gray-300 text-sm">AI will analyze the assigned officer's resolution quality.</p>
-                  </div>
-                  <div className="bg-gray-800 p-5 rounded-lg border border-gray-700">
-                    <h4 className="text-sm font-semibold text-gray-400 mb-2">Citizen Sentiment</h4>
-                    <div className="w-full bg-gray-700 rounded-full h-2.5 mt-4">
-                      <div className="bg-red-500 h-2.5 rounded-full" style={{ width: '85%' }}></div>
+                ) : (
+                  <div className="bg-gray-900 p-6 rounded-lg border border-purple-500">
+                    <h3 className="text-xl font-bold text-purple-400 mb-6 flex items-center gap-2">
+                      <span>🤖</span> Resolution Audit Report
+                    </h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Status</span>
+                        <span className={complaint.aiAudit.status === 'Adequate' ? 'text-green-400 font-bold text-lg' : 'text-yellow-400 font-bold text-lg'}>
+                          {complaint.aiAudit.status}
+                        </span>
+                      </div>
+                      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Confidence</span>
+                        <span className="text-gray-200 font-bold text-lg">{complaint.aiAudit.confidence}</span>
+                      </div>
                     </div>
-                    <p className="text-xs text-red-400 mt-2">Highly Dissatisfied (Placeholder)</p>
+
+                    <div className="space-y-4">
+                      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <span className="block text-gray-500 text-xs font-semibold uppercase mb-2">Summary</span>
+                        <p className="text-gray-300 text-sm leading-relaxed">{complaint.aiAudit.summary}</p>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-green-900/10 p-4 rounded-lg border border-green-900/30">
+                          <span className="block text-green-500/70 text-xs font-semibold uppercase mb-2">Improvements</span>
+                          <p className="text-green-400 text-sm">{complaint.aiAudit.improvements}</p>
+                        </div>
+                        <div className="bg-red-900/10 p-4 rounded-lg border border-red-900/30">
+                          <span className="block text-red-500/70 text-xs font-semibold uppercase mb-2">Remaining Issues</span>
+                          <p className="text-red-400 text-sm">{complaint.aiAudit.remainingIssues}</p>
+                        </div>
+                      </div>
+
+                      <div className="bg-purple-900/10 p-4 rounded-lg border border-purple-500/30">
+                        <span className="block text-purple-400/70 text-xs font-semibold uppercase mb-2">Recommendation</span>
+                        <p className="text-purple-300 font-medium">{complaint.aiAudit.recommendation}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-gray-800 p-5 rounded-lg border border-purple-900/50">
-                    <h4 className="text-sm font-semibold text-purple-400 mb-2">Recommended Action</h4>
-                    <p className="text-purple-300 text-sm italic">"Reassign to senior infrastructure team for immediate pothole fill."</p>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </div>

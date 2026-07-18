@@ -13,6 +13,11 @@ const OfficerComplaintDetails = () => {
   // Resolution state
   const [afterImage, setAfterImage] = useState(null);
   const [notes, setNotes] = useState('');
+  
+  // AI Audit State
+  const [auditRunning, setAuditRunning] = useState(false);
+  const [auditResult, setAuditResult] = useState(null);
+  const [auditAnimationStep, setAuditAnimationStep] = useState(0);
 
   const fetchComplaint = async () => {
     try {
@@ -46,6 +51,42 @@ const OfficerComplaintDetails = () => {
     }
   };
 
+  const handleRunAudit = async () => {
+    if (!afterImage || !notes) {
+      alert('Please provide an after photo and resolution notes before auditing.');
+      return;
+    }
+    setAuditRunning(true);
+    setAuditResult(null);
+    setAuditAnimationStep(1);
+
+    const interval = setInterval(() => {
+      setAuditAnimationStep(prev => (prev < 4 ? prev + 1 : prev));
+    }, 1500);
+
+    try {
+      const formData = new FormData();
+      formData.append('afterImage', afterImage);
+      formData.append('beforeImageUrl', complaint.imageUrl);
+      formData.append('notes', notes);
+      formData.append('issueType', complaint.aiInvestigation?.issueType || complaint.category);
+
+      const res = await api.post('/ai/audit-resolution', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      
+      clearInterval(interval);
+      setAuditAnimationStep(5);
+      setAuditResult(res.data);
+    } catch (error) {
+      console.error('Audit failed:', error);
+      alert('Failed to run AI Audit.');
+      clearInterval(interval);
+    } finally {
+      setAuditRunning(false);
+    }
+  };
+
   const handleResolutionSubmit = async () => {
     if (!afterImage || !notes) {
       alert('Please provide an after photo and resolution notes.');
@@ -55,7 +96,15 @@ const OfficerComplaintDetails = () => {
     setUpdating(true);
     try {
       const formData = new FormData();
-      formData.append('afterImage', afterImage);
+      
+      if (auditResult && auditResult.afterImageUrl) {
+        // AI already uploaded it, just pass the URL
+        formData.append('afterImageUrl', auditResult.afterImageUrl);
+        formData.append('aiAudit', JSON.stringify(auditResult));
+      } else {
+        formData.append('afterImage', afterImage);
+      }
+      
       formData.append('notes', notes);
 
       await api.patch(`/officer/complaints/${id}/resolve`, formData, {
@@ -275,13 +324,66 @@ const OfficerComplaintDetails = () => {
                     ></textarea>
                   </div>
 
-                  <button 
-                    onClick={handleResolutionSubmit}
-                    disabled={updating}
-                    className="w-full px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    {updating ? 'Processing...' : 'Complete Resolution'}
-                  </button>
+                  {/* AI Audit Flow */}
+                  {!auditResult && !auditRunning && (
+                    <button 
+                      onClick={handleRunAudit}
+                      disabled={updating || !afterImage || !notes}
+                      className="w-full px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 mt-4"
+                    >
+                      <span>🤖</span> Run AI Audit Before Submitting
+                    </button>
+                  )}
+
+                  {auditRunning && (
+                    <div className="bg-gray-800 p-4 rounded-lg border border-purple-500 mt-4 text-center">
+                      <div className="flex justify-center mb-2">
+                        <div className="animate-spin h-8 w-8 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+                      </div>
+                      <p className="text-purple-400 font-bold mb-2">Running AI Resolution Auditor...</p>
+                      <ul className="text-sm text-gray-400 space-y-1">
+                        <li className={auditAnimationStep >= 1 ? 'text-gray-200' : 'opacity-50'}>Analyzing before image...</li>
+                        <li className={auditAnimationStep >= 2 ? 'text-gray-200' : 'opacity-50'}>Comparing repairs...</li>
+                        <li className={auditAnimationStep >= 3 ? 'text-gray-200' : 'opacity-50'}>Checking remaining damage...</li>
+                        <li className={auditAnimationStep >= 4 ? 'text-gray-200' : 'opacity-50'}>Generating report...</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  {auditResult && (
+                    <div className="bg-gray-800 p-4 rounded-lg border border-purple-500 mt-4 animate-fadeIn">
+                      <h4 className="font-bold text-purple-400 mb-3 flex items-center gap-2">
+                        <span>✅</span> AI Audit Complete
+                      </h4>
+                      <div className="space-y-2 text-sm mb-4">
+                        <p><strong className="text-gray-400">Status:</strong> <span className={auditResult.status === 'Adequate' ? 'text-green-400' : 'text-yellow-400'}>{auditResult.status}</span></p>
+                        <p><strong className="text-gray-400">Confidence:</strong> {auditResult.confidence}</p>
+                        <p><strong className="text-gray-400">Summary:</strong> {auditResult.summary}</p>
+                        <p><strong className="text-gray-400">Recommendation:</strong> {auditResult.recommendation}</p>
+                      </div>
+                      
+                      <button 
+                        onClick={handleResolutionSubmit}
+                        disabled={updating}
+                        className="w-full px-8 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                      >
+                        {updating ? 'Processing...' : 'Submit Final Resolution'}
+                      </button>
+                    </div>
+                  )}
+
+                  {!auditResult && !auditRunning && (
+                    <div className="mt-4 pt-4 border-t border-gray-700 text-center">
+                      <p className="text-xs text-gray-500 mb-2">Or bypass AI audit</p>
+                      <button 
+                        onClick={handleResolutionSubmit}
+                        disabled={updating || !afterImage || !notes}
+                        className="w-full px-8 py-2 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        {updating ? 'Processing...' : 'Submit Without Audit'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -311,6 +413,34 @@ const OfficerComplaintDetails = () => {
                   <span>Resolved By: {complaint.resolution.resolvedBy?.name || 'Officer'}</span>
                   <span>Resolved Date: {new Date(complaint.resolution.resolvedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 </div>
+                
+                {complaint.aiAudit && (
+                  <div className="mt-6 p-4 bg-gray-900 rounded-lg border border-purple-500/30">
+                    <h4 className="text-sm font-bold text-purple-400 mb-3 uppercase">AI Resolution Audit</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm mb-3">
+                      <div>
+                        <span className="block text-gray-500 mb-1">Audit Status</span>
+                        <span className={complaint.aiAudit.status === 'Adequate' ? 'text-green-400 font-medium' : 'text-yellow-400 font-medium'}>
+                          {complaint.aiAudit.status}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="block text-gray-500 mb-1">Confidence</span>
+                        <span className="text-gray-300">{complaint.aiAudit.confidence}</span>
+                      </div>
+                    </div>
+                    <div className="space-y-3 text-sm">
+                      <div>
+                        <span className="block text-gray-500 mb-1">Summary</span>
+                        <p className="text-gray-300">{complaint.aiAudit.summary}</p>
+                      </div>
+                      <div>
+                        <span className="block text-gray-500 mb-1">Recommendation</span>
+                        <p className="text-purple-300">{complaint.aiAudit.recommendation}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

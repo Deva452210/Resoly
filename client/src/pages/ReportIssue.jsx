@@ -299,8 +299,6 @@ const ReportIssue = () => {
 
         </div>
 
-        </div>
-
         {/* RIGHT COLUMN: Info Block (Replaced the direct generation form) */}
         <div className="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-purple-500 flex flex-col justify-center text-center">
           <span className="text-6xl mb-4 block">🤖</span>

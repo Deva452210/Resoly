@@ -251,8 +251,95 @@ Return ONLY a valid JSON object matching this exact schema:
   }
 };
 
+const auditResolution = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No after image uploaded' });
+    }
+
+    const afterImageUrl = req.file.path;
+    const { beforeImageUrl, notes, issueType } = req.body;
+
+    if (!beforeImageUrl) {
+      return res.status(400).json({ message: 'Missing before image URL' });
+    }
+
+    // Fetch both images
+    const [beforeRes, afterRes] = await Promise.all([
+      axios.get(beforeImageUrl, { responseType: 'arraybuffer' }),
+      axios.get(afterImageUrl, { responseType: 'arraybuffer' })
+    ]);
+
+    const beforeBuffer = Buffer.from(beforeRes.data, 'binary');
+    const afterBuffer = Buffer.from(afterRes.data, 'binary');
+
+    const prompt = `
+You are an expert AI Resolution Auditor. Compare the "Before" image and the "After" image of this civic issue.
+Issue Type: ${issueType || 'Unknown'}
+Officer's Resolution Notes: ${notes || 'None provided'}
+
+Assess the quality of the repair/resolution.
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "confidence": "High, Medium, or Low (how confident are you in this assessment)",
+  "status": "Adequate, Inadequate, or Unclear",
+  "summary": "A 1-2 sentence summary comparing the before and after state",
+  "improvements": "What was successfully fixed?",
+  "remainingIssues": "What was missed or still looks damaged?",
+  "recommendation": "A brief recommendation for final approval or rework"
+}
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            { text: prompt },
+            { text: "Before Image:" },
+            {
+              inlineData: {
+                data: beforeBuffer.toString('base64'),
+                mimeType: 'image/jpeg'
+              }
+            },
+            { text: "After Image:" },
+            {
+              inlineData: {
+                data: afterBuffer.toString('base64'),
+                mimeType: req.file.mimetype || 'image/jpeg'
+              }
+            }
+          ]
+        }
+      ],
+      config: {
+        responseMimeType: "application/json"
+      }
+    });
+
+    let resultText = response.text;
+    resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+    if (!resultText.endsWith('}')) {
+      resultText += '\n}';
+    }
+
+    const parsedData = JSON.parse(resultText);
+    res.status(200).json({
+      ...parsedData,
+      afterImageUrl // return the URL so the frontend can display it or send it back for saving
+    });
+
+  } catch (error) {
+    console.error('AI Audit Error:', error);
+    res.status(500).json({ message: 'Failed to audit resolution' });
+  }
+};
+
 module.exports = {
   generateComplaintData,
   investigate,
-  finalizeComplaint
+  finalizeComplaint,
+  auditResolution
 };

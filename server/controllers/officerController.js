@@ -60,8 +60,8 @@ const updateComplaintStatus = async (req, res) => {
 // Resolve complaint with photo and notes
 const resolveComplaint = async (req, res) => {
   try {
-    const { notes } = req.body;
-    let afterImageUrl = null;
+    const { notes, afterImageUrl: existingAfterImageUrl, aiAudit } = req.body;
+    let afterImageUrl = existingAfterImageUrl || null;
     
     if (req.file) {
       afterImageUrl = req.file.path; // Cloudinary image URL
@@ -83,6 +83,16 @@ const resolveComplaint = async (req, res) => {
       resolvedBy: req.user._id,
       resolvedAt: new Date()
     };
+
+    if (aiAudit) {
+      try {
+        const parsedAudit = JSON.parse(aiAudit);
+        parsedAudit.auditedAt = new Date();
+        complaint.aiAudit = parsedAudit;
+      } catch (e) {
+        console.error('Failed to parse aiAudit', e);
+      }
+    }
 
     const updatedComplaint = await complaint.save();
     res.status(200).json(updatedComplaint);

@@ -210,6 +210,44 @@ const ComplaintDetails = () => {
                       </div>
                     </div>
 
+                    {/* AI Assessment Block */}
+                    {complaint.aiAudit && (
+                      <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6 animate-fadeIn">
+                        <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                          <span className="text-xl">🤖</span> AI Assessment
+                        </h3>
+                        
+                        <div className="flex flex-col sm:flex-row gap-6 mb-4">
+                          <div className="flex-1">
+                            <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Status</span>
+                            <span className={complaint.aiAudit.status === 'Adequate' ? 'text-green-400 font-bold text-lg' : 'text-yellow-400 font-bold text-lg'}>
+                              {complaint.aiAudit.status}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Confidence Meter</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-grow bg-gray-700 h-2 rounded-full overflow-hidden">
+                                <div className={`h-full ${complaint.aiAudit.confidence === 'High' ? 'w-full bg-green-500' : complaint.aiAudit.confidence === 'Medium' ? 'w-2/3 bg-yellow-500' : 'w-1/3 bg-red-500'}`}></div>
+                              </div>
+                              <span className="text-xs text-gray-300 font-medium">{complaint.aiAudit.confidence}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3 bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                          <div>
+                            <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Summary</span>
+                            <p className="text-gray-300 text-sm leading-relaxed">{complaint.aiAudit.summary}</p>
+                          </div>
+                          <div>
+                            <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Recommendation</span>
+                            <p className="text-purple-300 text-sm leading-relaxed">{complaint.aiAudit.recommendation}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Verification Block */}
                     <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6">
                       <h3 className="text-lg font-bold text-white mb-2 text-center">Was this issue actually resolved?</h3>

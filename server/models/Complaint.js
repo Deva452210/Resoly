@@ -56,6 +56,15 @@ const complaintSchema = new mongoose.Schema(
       generated: { type: Boolean, default: false },
       report: { type: String },
       generatedAt: { type: Date }
+    },
+    aiAudit: {
+      confidence: { type: String },
+      status: { type: String },
+      summary: { type: String },
+      improvements: { type: String },
+      remainingIssues: { type: String },
+      recommendation: { type: String },
+      auditedAt: { type: Date }
     }
   },
   { timestamps: true }

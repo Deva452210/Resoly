@@ -53,7 +53,9 @@ const AiInvestigation = () => {
         setFinalComplaint(res.data);
       } catch (error) {
         console.error('Finalization failed:', error);
-        alert('Failed to generate final complaint.');
+        alert('Failed to generate final complaint. Gemini API might be busy. Please try answering again.');
+        // Revert the answer so the user can retry without duplicating
+        setAnswers(answers);
       } finally {
         setIsFinalizing(false);
       }
