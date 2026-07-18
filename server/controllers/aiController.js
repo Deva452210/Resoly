@@ -3,6 +3,7 @@ const axios = require('axios');
 const questionsData = require('../data/investigationQuestions.json');
 const Complaint = require('../models/Complaint');
 const ExecutiveSummary = require('../models/ExecutiveSummary');
+const CivicIntelligence = require('../models/CivicIntelligence');
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
@@ -394,7 +395,12 @@ Return ONLY a valid JSON object matching this exact schema:
 
     let resultText = response.text;
     resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
-    if (!resultText.endsWith('}')) {
+    
+    // Fallback parsing: extract everything between first { and last }
+    const match = resultText.match(/\{[\s\S]*\}/);
+    if (match) {
+      resultText = match[0];
+    } else if (!resultText.endsWith('}')) {
       resultText += '\n}';
     }
 
@@ -415,11 +421,102 @@ Return ONLY a valid JSON object matching this exact schema:
   }
 };
 
+const getLatestCivicIntelligence = async (req, res) => {
+  try {
+    const report = await CivicIntelligence.findOne().sort({ generatedAt: -1 });
+    res.status(200).json(report);
+  } catch (error) {
+    console.error('Error fetching civic intelligence:', error);
+    res.status(500).json({ message: 'Failed to fetch civic intelligence' });
+  }
+};
+
+const generateCivicIntelligence = async (req, res) => {
+  try {
+    const complaints = await Complaint.find().populate('resolution.resolvedBy', 'name');
+    
+    // Condense the data for Gemini to see systemic relationships
+    const complaintData = complaints.map(c => ({
+      id: c._id,
+      title: c.title,
+      category: c.category,
+      department: c.department,
+      priority: c.priority,
+      status: c.status,
+      location: c.location?.area || c.location?.city || 'Unknown',
+      date: c.createdAt
+    }));
+
+    const prompt = `
+You are an advanced AI Civic Intelligence Engine. Your job is to analyze all civic complaints holistically and identify meaningful relationships, patterns, systemic risks, and root causes.
+
+Complaint Data (JSON array):
+${JSON.stringify(complaintData)}
+
+Return ONLY a valid JSON object matching this exact schema:
+{
+  "criticalAlerts": ["Alert 1 (e.g. 'Multiple water leaks reported in Downtown area indicating failing pipes')", "Alert 2"],
+  "relatedComplaints": [
+    {
+      "pattern": "String describing the relationship/pattern",
+      "complaints": [
+        { "id": "complaint_id", "title": "Complaint Title" }
+      ]
+    }
+  ],
+  "possibleRootCauses": ["Cause 1", "Cause 2"],
+  "recommendations": [
+    {
+      "action": "String detailing the recommended systemic action",
+      "linkedComplaints": [
+        { "id": "complaint_id", "title": "Complaint Title" }
+      ]
+    }
+  ]
+}
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      config: { responseMimeType: "application/json" }
+    });
+
+    let resultText = response.text;
+    resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+    
+    // Fallback parsing: extract everything between first { and last }
+    const match = resultText.match(/\{[\s\S]*\}/);
+    if (match) {
+      resultText = match[0];
+    } else if (!resultText.endsWith('}')) {
+      resultText += '\n}';
+    }
+
+    const parsedData = JSON.parse(resultText);
+
+    const newReport = await CivicIntelligence.create({
+      criticalAlerts: parsedData.criticalAlerts || [],
+      relatedComplaints: parsedData.relatedComplaints || [],
+      possibleRootCauses: parsedData.possibleRootCauses || [],
+      recommendations: parsedData.recommendations || []
+    });
+
+    res.status(200).json(newReport);
+
+  } catch (error) {
+    console.error('Error generating civic intelligence:', error);
+    res.status(500).json({ message: 'Failed to generate civic intelligence' });
+  }
+};
+
 module.exports = {
   generateComplaintData,
   investigate,
   finalizeComplaint,
   auditResolution,
   getLatestExecutiveSummary,
-  generateExecutiveSummary
+  generateExecutiveSummary,
+  getLatestCivicIntelligence,
+  generateCivicIntelligence
 };

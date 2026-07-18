@@ -8,7 +8,9 @@ const {
   finalizeComplaint, 
   auditResolution,
   getLatestExecutiveSummary,
-  generateExecutiveSummary
+  generateExecutiveSummary,
+  getLatestCivicIntelligence,
+  generateCivicIntelligence
 } = require('../controllers/aiController');
 const { upload } = require('../config/cloudinary');
 
@@ -19,5 +21,8 @@ router.post('/audit-resolution', protect, upload.single('afterImage'), auditReso
 
 router.get('/executive-summary', protect, getLatestExecutiveSummary);
 router.post('/executive-summary', protect, generateExecutiveSummary);
+
+router.get('/civic-intelligence', protect, getLatestCivicIntelligence);
+router.post('/civic-intelligence', protect, generateCivicIntelligence);
 
 module.exports = router;
