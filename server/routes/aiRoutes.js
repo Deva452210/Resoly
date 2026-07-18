@@ -10,7 +10,8 @@ const {
   getLatestExecutiveSummary,
   generateExecutiveSummary,
   getLatestCivicIntelligence,
-  generateCivicIntelligence
+  generateCivicIntelligence,
+  askAiCommandCenter
 } = require('../controllers/aiController');
 const { upload } = require('../config/cloudinary');
 
@@ -24,5 +25,7 @@ router.post('/executive-summary', protect, generateExecutiveSummary);
 
 router.get('/civic-intelligence', protect, getLatestCivicIntelligence);
 router.post('/civic-intelligence', protect, generateCivicIntelligence);
+
+router.post('/ask', protect, askAiCommandCenter);
 
 module.exports = router;

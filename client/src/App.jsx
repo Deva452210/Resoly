@@ -14,6 +14,7 @@ import AuthorityDashboard from './pages/AuthorityDashboard';
 import AuthorityComplaintDetails from './pages/AuthorityComplaintDetails';
 import AuthorityAnalytics from './pages/AuthorityAnalytics';
 import AiInvestigation from './pages/AiInvestigation';
+import CommandCenter from './pages/CommandCenter';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
               <Route path="/authority-dashboard" element={<AuthorityDashboard />} />
               <Route path="/authority-complaint/:id" element={<AuthorityComplaintDetails />} />
               <Route path="/authority-analytics" element={<AuthorityAnalytics />} />
+              <Route path="/command-center" element={<CommandCenter />} />
             </Route>
           </Routes>
         </div>

@@ -510,6 +510,64 @@ Return ONLY a valid JSON object matching this exact schema:
   }
 };
 
+const askAiCommandCenter = async (req, res) => {
+  try {
+    const { question } = req.body;
+    if (!question) {
+      return res.status(400).json({ message: 'Question is required' });
+    }
+
+    // Fetch system context
+    const complaints = await Complaint.find().populate('resolution.resolvedBy', 'name');
+    const execSummary = await ExecutiveSummary.findOne().sort({ generatedAt: -1 });
+    const civicIntel = await CivicIntelligence.findOne().sort({ generatedAt: -1 });
+
+    const complaintData = complaints.map(c => ({
+      id: c._id,
+      title: c.title,
+      category: c.category,
+      department: c.department,
+      priority: c.priority,
+      status: c.status,
+      resolvedBy: c.resolution?.resolvedBy?.name || 'Unassigned',
+      citizenSatisfaction: c.verification ? { solved: c.verification.solvedVotes, notSolved: c.verification.notSolvedVotes } : null
+    }));
+
+    const prompt = `
+You are the AI Command Center Assistant for the Higher Authority of Resoly.
+Your job is to answer the user's question concisely and accurately based ONLY on the provided system data.
+Do not fabricate information. If the answer is not in the data, say so.
+
+User Question: ${question}
+
+--- SYSTEM DATA CONTEXT ---
+
+[COMPLAINTS OVERVIEW]
+${JSON.stringify(complaintData)}
+
+[LATEST EXECUTIVE SUMMARY]
+${execSummary ? JSON.stringify(execSummary) : 'None'}
+
+[LATEST CIVIC INTELLIGENCE (ALERTS & ROOT CAUSES)]
+${civicIntel ? JSON.stringify(civicIntel) : 'None'}
+
+--- END SYSTEM DATA ---
+
+Respond with a clear, professional answer formatted as plain text or markdown.
+`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }]
+    });
+
+    res.status(200).json({ answer: response.text });
+  } catch (error) {
+    console.error('Error in AI Command Center ask:', error);
+    res.status(500).json({ message: 'Failed to process AI question' });
+  }
+};
+
 module.exports = {
   generateComplaintData,
   investigate,
@@ -518,5 +576,6 @@ module.exports = {
   getLatestExecutiveSummary,
   generateExecutiveSummary,
   getLatestCivicIntelligence,
-  generateCivicIntelligence
+  generateCivicIntelligence,
+  askAiCommandCenter
 };
