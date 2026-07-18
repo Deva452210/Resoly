@@ -9,6 +9,7 @@ const ComplaintDetails = () => {
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('progress');
+  const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
     const fetchComplaint = async () => {
@@ -254,14 +255,18 @@ const ComplaintDetails = () => {
                       <div className="flex justify-center gap-4 mt-4">
                         <button 
                           onClick={async () => {
+                            setVerifying(true);
                             try {
                               const res = await api.post(`/complaints/${id}/verify`, { vote: 'solved' });
                               setComplaint(res.data);
                             } catch (e) {
                               alert(e.response?.data?.message || 'Failed to verify');
+                            } finally {
+                              setVerifying(false);
                             }
                           }}
-                          className={`flex items-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium ${
+                          disabled={verifying}
+                          className={`flex items-center justify-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium min-w-[140px] disabled:opacity-50 ${
                             complaint.verification?.votes?.find(v => v.user === user._id)?.vote === 'solved'
                             ? 'bg-green-600 text-white border-green-500'
                             : 'bg-green-900/50 hover:bg-green-800 text-green-400 border-green-700'
@@ -271,20 +276,28 @@ const ComplaintDetails = () => {
                         </button>
                         <button 
                           onClick={async () => {
+                            setVerifying(true);
                             try {
                               const res = await api.post(`/complaints/${id}/verify`, { vote: 'not_solved' });
                               setComplaint(res.data);
                             } catch (e) {
                               alert(e.response?.data?.message || 'Failed to verify');
+                            } finally {
+                              setVerifying(false);
                             }
                           }}
-                          className={`flex items-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium ${
+                          disabled={verifying}
+                          className={`flex items-center justify-center gap-2 px-6 py-2 border rounded-full transition-colors font-medium min-w-[140px] disabled:opacity-50 ${
                             complaint.verification?.votes?.find(v => v.user === user._id)?.vote === 'not_solved'
                             ? 'bg-red-600 text-white border-red-500'
                             : 'bg-red-900/50 hover:bg-red-800 text-red-400 border-red-700'
                           }`}
                         >
-                          👎 Not Solved ({complaint.verification?.notSolvedVotes || 0})
+                          {verifying ? (
+                            <><div className="animate-spin h-4 w-4 border-2 border-red-200 border-t-transparent rounded-full"></div> Analyzing...</>
+                          ) : (
+                            <>👎 Not Solved ({complaint.verification?.notSolvedVotes || 0})</>
+                          )}
                         </button>
                       </div>
                     </div>

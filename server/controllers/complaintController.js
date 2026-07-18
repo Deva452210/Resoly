@@ -146,7 +146,7 @@ Complaint Details:
 Officer's Resolution Notes:
 ${complaint.resolution.notes || 'None provided'}
 
-Write a concise, professional 3-paragraph escalation report requesting higher-level administrative review of this issue. Do not use markdown blocks.
+Write a very short, concise, single-paragraph escalation alert requesting higher-level administrative review of this issue. Get straight to the point. Maximum 3-4 sentences. Do not use markdown blocks.
       `;
 
       try {
