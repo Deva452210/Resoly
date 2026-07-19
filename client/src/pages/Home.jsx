@@ -14,13 +14,13 @@ const Home = () => {
         <h3 className="text-white font-bold mt-4 mb-2">2. Officer Login</h3>
         <ul className="list-disc ml-6 mb-4 space-y-1 text-sm text-gray-300">
           <li><span className="text-white">Email:</span> <span className="text-yellow-400 font-bold">officer@resoly.com</span></li>
-          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">password123</span></li>
+          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">12345678</span></li>
         </ul>
 
         <h3 className="text-white font-bold mt-4 mb-2">3. Higher Authority Login</h3>
         <ul className="list-disc ml-6 mb-4 space-y-1 text-sm text-gray-300">
           <li><span className="text-white">Email:</span> <span className="text-yellow-400 font-bold">authority@resoly.com</span></li>
-          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">password123</span></li>
+          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">12345678</span></li>
         </ul>
       </div>
     </div>
