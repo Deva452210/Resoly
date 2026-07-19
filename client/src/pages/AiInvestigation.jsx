@@ -118,18 +118,18 @@ const AiInvestigation = () => {
           {isFinalizing && (
             <div className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
               <span className="text-6xl mb-4 animate-bounce">🤖</span>
-              <h2 className="text-xl font-bold text-purple-400 mb-2">Analyzing your responses...</h2>
+              <h2 className="text-xl font-bold text-white mb-2">Analyzing your responses...</h2>
               <p className="text-gray-300">Drafting the perfect professional complaint for the authorities.</p>
               <div className="mt-6 flex gap-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-ping"></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
+                <div className="w-3 h-3 bg-white rounded-full animate-ping"></div>
+                <div className="w-3 h-3 bg-white rounded-full animate-ping" style={{animationDelay: '0.2s'}}></div>
+                <div className="w-3 h-3 bg-white rounded-full animate-ping" style={{animationDelay: '0.4s'}}></div>
               </div>
             </div>
           )}
 
           <div className="bg-gray-900 p-4 border-b border-gray-700 flex justify-between items-center">
-            <span className="text-purple-400 font-semibold flex items-center gap-2">
+            <span className="text-white font-semibold flex items-center gap-2">
               <span className="text-2xl">🤖</span> AI Investigator
             </span>
             <span className="text-gray-400 text-sm">
@@ -141,10 +141,10 @@ const AiInvestigation = () => {
             {/* Chat History */}
             <div className="space-y-6 flex-grow mb-6">
               <div className="flex gap-4">
-                <div className="w-10 h-10 rounded-full bg-purple-900/50 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
                 <div className="bg-gray-700 p-4 rounded-2xl rounded-tl-none text-gray-200">
                   <p>Hi! I'm the Resoly AI Investigator.</p>
-                  <p className="mt-2 text-sm text-purple-300">I detected: <strong>{investigationData.issueType}</strong> ({investigationData.confidence} confidence)</p>
+                  <p className="mt-2 text-sm text-gray-300">I detected: <strong>{investigationData.issueType}</strong> ({investigationData.confidence} confidence)</p>
                   <p className="mt-2">I've analyzed your image and would like to ask a few questions to help the local authority resolve this issue faster.</p>
                 </div>
               </div>
@@ -152,16 +152,16 @@ const AiInvestigation = () => {
               {answers.map((ans, i) => (
                 <div key={i} className="space-y-4">
                   <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-full bg-purple-900/50 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
+                    <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
                     <div className="bg-gray-700 p-4 rounded-2xl rounded-tl-none text-gray-200">
                       <p>{ans.question}</p>
                     </div>
                   </div>
                   <div className="flex gap-4 justify-end">
-                    <div className="bg-blue-600 p-4 rounded-2xl rounded-tr-none text-white">
+                    <div className="bg-white text-black p-4 rounded-2xl rounded-tr-none text-white">
                       <p>{ans.answer}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-blue-900/50 flex items-center justify-center text-xl flex-shrink-0">👤</div>
+                    <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl flex-shrink-0">👤</div>
                   </div>
                 </div>
               ))}
@@ -169,7 +169,7 @@ const AiInvestigation = () => {
               {/* Current Question */}
               {!isFinalizing && currentQuestion && (
                 <div className="flex gap-4 animate-fadeIn">
-                  <div className="w-10 h-10 rounded-full bg-purple-900/50 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
+                  <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-xl flex-shrink-0">🤖</div>
                   <div className="bg-gray-700 p-4 rounded-2xl rounded-tl-none text-gray-200">
                     <p>{currentQuestion.text}</p>
                   </div>
@@ -202,10 +202,10 @@ const AiInvestigation = () => {
                       value={textInput} 
                       onChange={e => setTextInput(e.target.value)} 
                       placeholder="Type your answer here..."
-                      className="flex-grow bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="flex-grow bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
                       autoFocus
                     />
-                    <button type="submit" className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-3 rounded-lg font-bold transition-colors">
+                    <button type="submit" className="bg-white text-black hover:bg-gray-200 px-6 py-3 rounded-lg font-bold transition-colors">
                       Send
                     </button>
                   </form>
@@ -228,11 +228,11 @@ const AiInvestigation = () => {
               <div className="mt-4 space-y-3">
                 <div className="bg-gray-900 p-3 rounded text-sm text-gray-300 border border-gray-700">
                   <span className="block text-gray-500 mb-1">Issue Type</span>
-                  <span className="font-semibold text-purple-400">{investigationData.issueType}</span>
+                  <span className="font-semibold text-white">{investigationData.issueType}</span>
                 </div>
                 <div className="bg-gray-900 p-3 rounded text-sm text-gray-300 border border-gray-700">
                   <span className="block text-gray-500 mb-1">Confidence</span>
-                  <span className="font-semibold text-purple-400">{investigationData.confidence}</span>
+                  <span className="font-semibold text-white">{investigationData.confidence}</span>
                 </div>
               </div>
             </div>
@@ -266,7 +266,7 @@ const AiInvestigation = () => {
 
               <div>
                 <label className="block text-gray-400 text-sm font-medium mb-1">Recommended Action</label>
-                <textarea name="recommendedAction" value={finalComplaint.recommendedAction || ''} onChange={handleInputChange} className="w-full min-h-[80px] bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-purple-300 font-medium" />
+                <textarea name="recommendedAction" value={finalComplaint.recommendedAction || ''} onChange={handleInputChange} className="w-full min-h-[80px] bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-300 font-medium" />
               </div>
 
               <div className="pt-4">

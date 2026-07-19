@@ -24,13 +24,13 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/feed"
-                    className="hover:text-blue-400 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     Feed
                   </Link>
                   <Link
                     to="/report-issue"
-                    className="hover:text-blue-400 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     Report Issue
                   </Link>
@@ -39,7 +39,7 @@ const Navbar = () => {
               {user.role === "officer" && (
                 <Link
                   to="/officer-dashboard"
-                  className="hover:text-blue-400 transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   Dashboard
                 </Link>
@@ -48,19 +48,19 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/authority-dashboard"
-                    className="hover:text-blue-400 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     Dashboard
                   </Link>
                   <Link
                     to="/authority-analytics"
-                    className="hover:text-blue-400 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     Analytics
                   </Link>
                   <Link
                     to="/command-center"
-                    className="hover:text-purple-400 transition-colors text-purple-300 font-bold flex items-center gap-1"
+                    className="hover:text-white transition-colors text-gray-300 font-bold flex items-center gap-1"
                   >
                     <span>🧠</span> Command Center
                   </Link>

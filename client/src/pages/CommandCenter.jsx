@@ -68,7 +68,7 @@ const CommandCenter = () => {
       </div>
 
       <div className="flex-1 bg-gray-900 border border-gray-700 rounded-2xl flex flex-col overflow-hidden shadow-2xl relative">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl -mr-32 -mt-32 z-0 pointer-events-none"></div>
+        
 
         {/* Chat History Pane */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 z-10 relative">
@@ -76,7 +76,7 @@ const CommandCenter = () => {
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] rounded-2xl px-5 py-3 ${
                 msg.role === 'user' 
-                  ? 'bg-blue-600 text-white shadow-lg rounded-br-none' 
+                  ? 'bg-white text-black shadow-lg rounded-br-none' 
                   : 'bg-gray-800 text-gray-200 border border-gray-700 shadow-md rounded-bl-none prose prose-invert max-w-none'
               }`}>
                 {msg.role === 'assistant' ? (
@@ -90,7 +90,7 @@ const CommandCenter = () => {
           {isLoading && (
             <div className="flex justify-start">
               <div className="bg-gray-800 border border-gray-700 text-gray-400 px-5 py-3 rounded-2xl rounded-bl-none shadow-md flex items-center gap-3">
-                <div className="animate-spin h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-4 w-4 border-2 border-gray-700 border-t-transparent rounded-full"></div>
                 Analyzing System Data...
               </div>
             </div>
@@ -107,7 +107,7 @@ const CommandCenter = () => {
                   key={idx}
                   onClick={() => handleSend(q)}
                   disabled={isLoading}
-                  className="bg-gray-700 hover:bg-purple-900/50 text-gray-300 text-sm px-4 py-2 rounded-full border border-gray-600 transition-colors disabled:opacity-50"
+                  className="bg-gray-700 hover:bg-gray-800 text-gray-300 text-sm px-4 py-2 rounded-full border border-gray-600 transition-colors disabled:opacity-50"
                 >
                   {q}
                 </button>
@@ -121,13 +121,13 @@ const CommandCenter = () => {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask anything about complaints, officers, or system alerts..."
-              className="flex-1 bg-gray-900 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 resize-none h-[60px]"
+              className="flex-1 bg-gray-900 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gray-700 resize-none h-[60px]"
               disabled={isLoading}
             />
             <button
               onClick={() => handleSend()}
               disabled={isLoading || !input.trim()}
-              className="bg-purple-600 hover:bg-purple-500 text-white px-6 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-purple-900/30 h-[60px] flex items-center justify-center min-w-[100px]"
+              className="bg-white text-black hover:bg-gray-200 px-6 rounded-xl font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-none h-[60px] flex items-center justify-center min-w-[100px]"
             >
               Send
             </button>

@@ -185,7 +185,7 @@ const ReportIssue = () => {
                 type="file" 
                 accept="image/*" 
                 onChange={handleImageChange} 
-                className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500 cursor-pointer" 
+                className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-white text-black file:text-white hover:file:bg-white cursor-pointer" 
               />
               {imagePreview && (
                 <div className="mt-4 rounded-lg overflow-hidden border border-gray-600">
@@ -216,7 +216,7 @@ const ReportIssue = () => {
                 value={titleInput}
                 onChange={(e) => setTitleInput(e.target.value)}
                 placeholder='Example: "Pothole near Bus Stand"' 
-                className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400" 
               />
             </div>
             <div>
@@ -225,7 +225,7 @@ const ReportIssue = () => {
                 value={additionalDetails}
                 onChange={(e) => setAdditionalDetails(e.target.value)}
                 placeholder="Provide any additional details that may help the authorities..." 
-                className="w-full min-h-[100px] bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" 
+                className="w-full min-h-[100px] bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400" 
               />
             </div>
           </div>
@@ -237,13 +237,13 @@ const ReportIssue = () => {
             <div className="flex gap-4 mb-4">
               <button 
                 onClick={() => setLocationMode('current')}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${locationMode === 'current' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${locationMode === 'current' ? 'bg-white text-black text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
               >
                 Option A: Use Current Location
               </button>
               <button 
                 onClick={() => setLocationMode('manual')}
-                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${locationMode === 'manual' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${locationMode === 'manual' ? 'bg-white text-black text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
               >
                 Option B: Enter Manually
               </button>
@@ -264,9 +264,9 @@ const ReportIssue = () => {
 
             {locationMode === 'manual' && (
               <div className="space-y-3 p-4 bg-gray-700 rounded-lg">
-                <input type="text" placeholder="Area / Street" value={area} onChange={e => setArea(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                <input type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500" />
-                <input type="text" placeholder="Landmark (optional)" value={landmark} onChange={e => setLandmark(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                <input type="text" placeholder="Area / Street" value={area} onChange={e => setArea(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400" />
+                <input type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400" />
+                <input type="text" placeholder="Landmark (optional)" value={landmark} onChange={e => setLandmark(e.target.value)} className="w-full bg-gray-600 text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400" />
               </div>
             )}
           </div>
@@ -276,7 +276,7 @@ const ReportIssue = () => {
             <button 
               onClick={generateWithAI} 
               disabled={isGenerating || !image}
-              className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center text-lg"
+              className="w-full py-4 bg-white text-black hover:bg-gray-200 text-white font-bold rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center text-lg"
             >
               {isGenerating ? (
                 <span className="flex items-center gap-3">
@@ -300,9 +300,9 @@ const ReportIssue = () => {
         </div>
 
         {/* RIGHT COLUMN: Info Block (Replaced the direct generation form) */}
-        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-purple-500 flex flex-col justify-center text-center">
+        <div className="bg-gray-800 p-6 rounded-xl shadow-lg border-t-4 border-gray-700 flex flex-col justify-center text-center">
           <span className="text-6xl mb-4 block">🤖</span>
-          <h2 className="text-2xl font-bold mb-4 text-purple-400">Resoly AI Investigator</h2>
+          <h2 className="text-2xl font-bold mb-4 text-white">Resoly AI Investigator</h2>
           <p className="text-gray-300 leading-relaxed mb-6">
             Instead of just guessing the details, our AI will now analyze your photo and ask you a few quick questions to build a highly accurate, comprehensive report for the authorities.
           </p>

@@ -39,7 +39,7 @@ const AuthorityAnalytics = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin h-12 w-12 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-gray-700 rounded-full border-t-transparent"></div>
       </div>
     );
   }
@@ -110,19 +110,19 @@ const AuthorityAnalytics = () => {
               </div>
 
               <div className="bg-gray-800 rounded-xl p-5 border border-gray-700">
-                <h3 className="text-blue-400 font-bold uppercase text-sm mb-3 flex items-center gap-2">
+                <h3 className="text-white font-bold uppercase text-sm mb-3 flex items-center gap-2">
                   <span>🔗</span> Related Complaints
                 </h3>
                 <div className="space-y-4">
                   {civicIntelligence.relatedComplaints?.map((relation, idx) => (
                     <div key={idx} className="bg-gray-900/50 p-3 rounded-lg border border-gray-700/50">
-                      <p className="text-blue-300 text-sm font-medium mb-2">{relation.pattern}</p>
+                      <p className="text-gray-300 text-sm font-medium mb-2">{relation.pattern}</p>
                       <div className="flex flex-wrap gap-2">
                         {relation.complaints?.map((comp, cIdx) => (
                           <Link 
                             key={cIdx} 
                             to={`/authority-complaint/${comp.id}`}
-                            className="text-xs bg-blue-900/30 text-blue-400 border border-blue-900/50 px-2 py-1 rounded hover:bg-blue-900/50 transition-colors"
+                            className="text-xs bg-gray-800 text-white border border-gray-700 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
                           >
                             #{comp.title.substring(0, 15)}...
                           </Link>
@@ -135,8 +135,8 @@ const AuthorityAnalytics = () => {
 
             </div>
 
-            <div className="bg-purple-900/10 border border-purple-500/20 rounded-xl p-5">
-              <h3 className="text-purple-400 font-bold uppercase text-sm mb-4 flex items-center gap-2">
+            <div className="bg-gray-800 border border-gray-700 rounded-xl p-5">
+              <h3 className="text-white font-bold uppercase text-sm mb-4 flex items-center gap-2">
                 <span>💡</span> AI Recommendations
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -149,7 +149,7 @@ const AuthorityAnalytics = () => {
                           <Link 
                             key={cIdx} 
                             to={`/authority-complaint/${comp.id}`}
-                            className="text-xs bg-purple-900/30 text-purple-400 border border-purple-900/50 px-2 py-1 rounded hover:bg-purple-900/50 transition-colors"
+                            className="text-xs bg-gray-800 text-white border border-gray-700 px-2 py-1 rounded hover:bg-gray-800 transition-colors"
                           >
                             🔗 {comp.title.substring(0, 20)}...
                           </Link>

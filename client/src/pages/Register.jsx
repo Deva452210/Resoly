@@ -35,7 +35,7 @@ const Register = () => {
           <input 
             type="text" 
             placeholder="Name" 
-            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-gray-700"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -43,7 +43,7 @@ const Register = () => {
           <input 
             type="email" 
             placeholder="Email" 
-            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-gray-700"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -51,12 +51,12 @@ const Register = () => {
           <input 
             type="password" 
             placeholder="Password" 
-            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-gray-700"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-500 transition-colors mt-2">
+          <button type="submit" className="bg-white text-black text-white p-2 rounded hover:bg-gray-200 transition-colors mt-2">
             Sign Up
           </button>
         </form>

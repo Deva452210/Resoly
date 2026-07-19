@@ -124,7 +124,7 @@ const OfficerComplaintDetails = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin h-12 w-12 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-gray-700 rounded-full border-t-transparent"></div>
       </div>
     );
   }
@@ -133,7 +133,7 @@ const OfficerComplaintDetails = () => {
     return (
       <div className="container mx-auto p-4 text-center mt-10">
         <h2 className="text-2xl font-bold text-white mb-4">Complaint not found</h2>
-        <Link to="/officer-dashboard" className="text-purple-400 hover:text-purple-300 underline">Back to Dashboard</Link>
+        <Link to="/officer-dashboard" className="text-white hover:text-gray-300 underline">Back to Dashboard</Link>
       </div>
     );
   }
@@ -177,7 +177,7 @@ const OfficerComplaintDetails = () => {
             <div className="space-y-4">
               <div>
                 <span className="block text-gray-500 text-sm font-medium mb-1">Category</span>
-                <span className="px-3 py-1 rounded bg-blue-900/50 text-blue-300 border border-blue-800 text-sm font-medium">{complaint.category}</span>
+                <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">{complaint.category}</span>
               </div>
               <div>
                 <span className="block text-gray-500 text-sm font-medium mb-1">Priority</span>
@@ -191,7 +191,7 @@ const OfficerComplaintDetails = () => {
               </div>
               <div>
                 <span className="block text-gray-500 text-sm font-medium mb-1">Department</span>
-                <span className="px-3 py-1 rounded bg-purple-900/50 text-purple-300 border border-purple-800 text-sm font-medium">{complaint.department}</span>
+                <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">{complaint.department}</span>
               </div>
             </div>
 
@@ -219,20 +219,20 @@ const OfficerComplaintDetails = () => {
 
           {/* AI Investigation Section */}
           {complaint.aiInvestigation && (
-            <div className="mb-8 bg-purple-900/10 border border-purple-500/30 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+            <div className="mb-8 bg-gray-800 border border-gray-700 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                 <span className="text-xl">🤖</span> AI Investigation Profile
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
+                  <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
                   <span className="text-white font-medium">{complaint.aiInvestigation.issueType}</span>
                   <span className="ml-2 text-xs text-gray-400 border border-gray-600 rounded px-2 py-0.5">Confidence: {complaint.aiInvestigation.confidence}</span>
                 </div>
                 {complaint.aiInvestigation.estimatedImpact && (
                   <div>
-                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
+                    <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
                     <span className="text-red-300 font-medium">{complaint.aiInvestigation.estimatedImpact}</span>
                   </div>
                 )}
@@ -240,12 +240,12 @@ const OfficerComplaintDetails = () => {
 
               {complaint.aiInvestigation.questionsAndAnswers?.length > 0 && (
                 <div className="mb-6">
-                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
+                  <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
                   <div className="space-y-3 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                     {complaint.aiInvestigation.questionsAndAnswers.map((qa, idx) => (
                       <div key={idx} className="text-sm">
                         <span className="block text-gray-400">Q: {qa.question}</span>
-                        <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-purple-500 pl-3">A: {qa.answer}</span>
+                        <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-gray-700 pl-3">A: {qa.answer}</span>
                       </div>
                     ))}
                   </div>
@@ -254,8 +254,8 @@ const OfficerComplaintDetails = () => {
 
               {complaint.aiInvestigation.recommendedAction && (
                 <div>
-                  <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
-                  <p className="text-purple-200 bg-purple-900/20 p-3 rounded text-sm italic border border-purple-500/20">
+                  <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
+                  <p className="text-gray-300 bg-gray-800 p-3 rounded text-sm italic border border-gray-700">
                     {complaint.aiInvestigation.recommendedAction}
                   </p>
                 </div>
@@ -270,7 +270,7 @@ const OfficerComplaintDetails = () => {
 
           {/* Officer Management Section */}
           {complaint.status !== 'Resolved' && (
-            <div className="bg-gray-900 p-6 rounded-lg border border-purple-500 animate-fadeIn">
+            <div className="bg-gray-900 p-6 rounded-lg border border-gray-700 animate-fadeIn">
               <h2 className="text-xl font-bold text-white mb-4">Manage Complaint Status</h2>
               
               <div className="flex flex-col sm:flex-row gap-4 items-end mb-6">
@@ -279,7 +279,7 @@ const OfficerComplaintDetails = () => {
                   <select 
                     value={status} 
                     onChange={(e) => setStatus(e.target.value)}
-                    className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600 appearance-none"
+                    className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-600 appearance-none"
                   >
                     <option value="Reported">Reported</option>
                     <option value="Assigned">Assigned</option>
@@ -291,7 +291,7 @@ const OfficerComplaintDetails = () => {
                   <button 
                     onClick={handleStatusUpdate}
                     disabled={updating || status === complaint.status}
-                    className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
+                    className="w-full sm:w-auto px-8 py-3 bg-white text-black hover:bg-gray-200 font-bold rounded-lg transition-colors disabled:opacity-50 whitespace-nowrap"
                   >
                     {updating ? 'Saving...' : 'Save Status'}
                   </button>
@@ -309,7 +309,7 @@ const OfficerComplaintDetails = () => {
                       type="file" 
                       accept="image/*"
                       onChange={(e) => setAfterImage(e.target.files[0])}
-                      className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-purple-300 hover:file:bg-gray-600"
+                      className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-700 file:text-gray-300 hover:file:bg-gray-600"
                     />
                   </div>
                   
@@ -320,7 +320,7 @@ const OfficerComplaintDetails = () => {
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Detail the actions taken to resolve this issue..."
-                      className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 border border-gray-600"
+                      className="w-full bg-gray-700 text-white p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 border border-gray-600"
                     ></textarea>
                   </div>
 
@@ -329,18 +329,18 @@ const OfficerComplaintDetails = () => {
                     <button 
                       onClick={handleRunAudit}
                       disabled={updating || !afterImage || !notes}
-                      className="w-full px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 mt-4"
+                      className="w-full px-8 py-3 bg-white text-black hover:bg-gray-200 font-bold rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center gap-2 mt-4"
                     >
                       <span>🤖</span> Run AI Audit Before Submitting
                     </button>
                   )}
 
                   {auditRunning && (
-                    <div className="bg-gray-800 p-4 rounded-lg border border-purple-500 mt-4 text-center">
+                    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 mt-4 text-center">
                       <div className="flex justify-center mb-2">
-                        <div className="animate-spin h-8 w-8 border-4 border-purple-500 border-t-transparent rounded-full"></div>
+                        <div className="animate-spin h-8 w-8 border-4 border-gray-700 border-t-transparent rounded-full"></div>
                       </div>
-                      <p className="text-purple-400 font-bold mb-2">Running AI Resolution Auditor...</p>
+                      <p className="text-white font-bold mb-2">Running AI Resolution Auditor...</p>
                       <ul className="text-sm text-gray-400 space-y-1">
                         <li className={auditAnimationStep >= 1 ? 'text-gray-200' : 'opacity-50'}>Analyzing before image...</li>
                         <li className={auditAnimationStep >= 2 ? 'text-gray-200' : 'opacity-50'}>Comparing repairs...</li>
@@ -351,8 +351,8 @@ const OfficerComplaintDetails = () => {
                   )}
 
                   {auditResult && (
-                    <div className="bg-gray-800 p-4 rounded-lg border border-purple-500 mt-4 animate-fadeIn">
-                      <h4 className="font-bold text-purple-400 mb-3 flex items-center gap-2">
+                    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 mt-4 animate-fadeIn">
+                      <h4 className="font-bold text-white mb-3 flex items-center gap-2">
                         <span>✅</span> AI Audit Complete
                       </h4>
                       <div className="space-y-2 text-sm mb-4">
@@ -415,8 +415,8 @@ const OfficerComplaintDetails = () => {
                 </div>
                 
                 {complaint.aiAudit && (
-                  <div className="mt-6 p-4 bg-gray-900 rounded-lg border border-purple-500/30">
-                    <h4 className="text-sm font-bold text-purple-400 mb-3 uppercase">AI Resolution Audit</h4>
+                  <div className="mt-6 p-4 bg-gray-900 rounded-lg border border-gray-700">
+                    <h4 className="text-sm font-bold text-white mb-3 uppercase">AI Resolution Audit</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm mb-3">
                       <div>
                         <span className="block text-gray-500 mb-1">Audit Status</span>
@@ -436,7 +436,7 @@ const OfficerComplaintDetails = () => {
                       </div>
                       <div>
                         <span className="block text-gray-500 mb-1">Recommendation</span>
-                        <p className="text-purple-300">{complaint.aiAudit.recommendation}</p>
+                        <p className="text-gray-300">{complaint.aiAudit.recommendation}</p>
                       </div>
                     </div>
                   </div>

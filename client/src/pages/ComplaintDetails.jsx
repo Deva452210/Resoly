@@ -28,7 +28,7 @@ const ComplaintDetails = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin h-12 w-12 border-4 border-purple-500 rounded-full border-t-transparent"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-gray-700 rounded-full border-t-transparent"></div>
       </div>
     );
   }
@@ -37,7 +37,7 @@ const ComplaintDetails = () => {
     return (
       <div className="container mx-auto p-4 text-center mt-10">
         <h2 className="text-2xl font-bold text-white mb-4">Complaint not found</h2>
-        <Link to="/feed" className="text-purple-400 hover:text-purple-300 underline">Back to Feed</Link>
+        <Link to="/feed" className="text-white hover:text-gray-300 underline">Back to Feed</Link>
       </div>
     );
   }
@@ -74,7 +74,7 @@ const ComplaintDetails = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">{complaint.title}</h1>
 
           <div className="flex flex-wrap gap-3 mb-8">
-            <span className="px-3 py-1 rounded bg-blue-900/50 text-blue-300 border border-blue-800 text-sm font-medium">Category: {complaint.category}</span>
+            <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">Category: {complaint.category}</span>
             <span className={`px-3 py-1 rounded border text-sm font-medium ${
               complaint.priority === 'High' ? 'bg-red-900/50 text-red-300 border-red-800' :
               complaint.priority === 'Medium' ? 'bg-yellow-900/50 text-yellow-300 border-yellow-800' :
@@ -82,7 +82,7 @@ const ComplaintDetails = () => {
             }`}>
               Priority: {complaint.priority}
             </span>
-            <span className="px-3 py-1 rounded bg-purple-900/50 text-purple-300 border border-purple-800 text-sm font-medium">Department: {complaint.department}</span>
+            <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">Department: {complaint.department}</span>
           </div>
 
           {/* Tabs */}
@@ -91,7 +91,7 @@ const ComplaintDetails = () => {
               onClick={() => setActiveTab('progress')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'progress' 
-                ? 'text-purple-400 border-b-2 border-purple-500' 
+                ? 'text-white border-b-2 border-gray-700' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -101,7 +101,7 @@ const ComplaintDetails = () => {
               onClick={() => setActiveTab('resolution')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'resolution' 
-                ? 'text-purple-400 border-b-2 border-purple-500' 
+                ? 'text-white border-b-2 border-gray-700' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -139,8 +139,8 @@ const ComplaintDetails = () => {
                         textClasses += " text-green-400";
                       } else if (index === currentStepIndex) {
                         // Current
-                        circleClasses += " bg-purple-900 border-purple-500 text-purple-300 shadow-[0_0_10px_rgba(168,85,247,0.5)]";
-                        textClasses += " text-purple-300";
+                        circleClasses += " bg-gray-800 border-gray-700 text-gray-300 shadow-[0_0_10px_rgba(255,255,255,0.1)]";
+                        textClasses += " text-gray-300";
                       } else {
                         // Upcoming
                         circleClasses += " bg-gray-800 border-gray-600 text-gray-500";
@@ -168,7 +168,7 @@ const ComplaintDetails = () => {
                         {new Date(complaint.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                       </div>
                       <div className="relative pb-4 pl-4 border-l border-gray-600 flex-grow">
-                        <div className="absolute w-2 h-2 bg-purple-500 rounded-full -left-[4.5px] top-1.5"></div>
+                        <div className="absolute w-2 h-2 bg-white rounded-full -left-[4.5px] top-1.5"></div>
                         <p className="text-white font-medium">Complaint {complaint.status}</p>
                         <p className="text-sm text-gray-400 mt-1">Status updated by the system.</p>
                       </div>
@@ -213,8 +213,8 @@ const ComplaintDetails = () => {
 
                     {/* AI Assessment Block */}
                     {complaint.aiAudit && (
-                      <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6 animate-fadeIn">
-                        <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+                      <div className="bg-gray-900 p-5 rounded-lg border border-gray-700 mt-6 animate-fadeIn">
+                        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                           <span className="text-xl">🤖</span> AI Assessment
                         </h3>
                         
@@ -243,14 +243,14 @@ const ComplaintDetails = () => {
                           </div>
                           <div>
                             <span className="block text-gray-500 text-xs font-semibold uppercase mb-1">Recommendation</span>
-                            <p className="text-purple-300 text-sm leading-relaxed">{complaint.aiAudit.recommendation}</p>
+                            <p className="text-gray-300 text-sm leading-relaxed">{complaint.aiAudit.recommendation}</p>
                           </div>
                         </div>
                       </div>
                     )}
 
                     {/* Verification Block */}
-                    <div className="bg-gray-900 p-5 rounded-lg border border-purple-500 mt-6">
+                    <div className="bg-gray-900 p-5 rounded-lg border border-gray-700 mt-6">
                       <h3 className="text-lg font-bold text-white mb-2 text-center">Was this issue actually resolved?</h3>
                       <div className="flex justify-center gap-4 mt-4">
                         <button 

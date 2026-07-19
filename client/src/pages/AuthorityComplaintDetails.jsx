@@ -25,7 +25,7 @@ const AuthorityComplaintDetails = () => {
   if (loading) {
     return (
       <div className="container mx-auto p-4 flex justify-center items-center min-h-[50vh]">
-        <div className="animate-spin h-12 w-12 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+        <div className="animate-spin h-12 w-12 border-4 border-gray-700 rounded-full border-t-transparent"></div>
       </div>
     );
   }
@@ -34,7 +34,7 @@ const AuthorityComplaintDetails = () => {
     return (
       <div className="container mx-auto p-4 text-center mt-10">
         <h2 className="text-2xl font-bold text-white mb-4">Complaint not found</h2>
-        <Link to="/authority-dashboard" className="text-blue-400 hover:text-blue-300 underline">Back to Dashboard</Link>
+        <Link to="/authority-dashboard" className="text-white hover:text-gray-300 underline">Back to Dashboard</Link>
       </div>
     );
   }
@@ -79,7 +79,7 @@ const AuthorityComplaintDetails = () => {
           </div>
 
           <div className="flex flex-wrap gap-3 mb-8">
-            <span className="px-3 py-1 rounded bg-blue-900/50 text-blue-300 border border-blue-800 text-sm font-medium">Category: {complaint.category}</span>
+            <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">Category: {complaint.category}</span>
             <span className={`px-3 py-1 rounded border text-sm font-medium ${
               complaint.priority === 'High' ? 'bg-red-900/50 text-red-300 border-red-800' :
               complaint.priority === 'Medium' ? 'bg-yellow-900/50 text-yellow-300 border-yellow-800' :
@@ -87,7 +87,7 @@ const AuthorityComplaintDetails = () => {
             }`}>
               Priority: {complaint.priority}
             </span>
-            <span className="px-3 py-1 rounded bg-purple-900/50 text-purple-300 border border-purple-800 text-sm font-medium">Department: {complaint.department}</span>
+            <span className="px-3 py-1 rounded bg-gray-800 text-gray-300 border border-gray-700 text-sm font-medium">Department: {complaint.department}</span>
           </div>
 
           {/* Tabs */}
@@ -96,7 +96,7 @@ const AuthorityComplaintDetails = () => {
               onClick={() => setActiveTab('progress')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'progress' 
-                ? 'text-blue-400 border-b-2 border-blue-500' 
+                ? 'text-white border-b-2 border-gray-700' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -106,7 +106,7 @@ const AuthorityComplaintDetails = () => {
               onClick={() => setActiveTab('resolution')}
               className={`pb-3 px-4 font-medium transition-colors ${
                 activeTab === 'resolution' 
-                ? 'text-blue-400 border-b-2 border-blue-500' 
+                ? 'text-white border-b-2 border-gray-700' 
                 : 'text-gray-400 hover:text-gray-200'
               }`}
             >
@@ -128,8 +128,8 @@ const AuthorityComplaintDetails = () => {
               onClick={() => setActiveTab('ai_audit')}
               className={`pb-3 px-4 font-medium transition-colors flex items-center gap-2 ${
                 activeTab === 'ai_audit' 
-                ? 'text-purple-400 border-b-2 border-purple-500' 
-                : 'text-purple-500/70 hover:text-purple-400'
+                ? 'text-white border-b-2 border-gray-700' 
+                : 'text-gray-400 hover:text-white'
               }`}
             >
               <span className="text-lg">🤖</span> AI Audit
@@ -152,8 +152,8 @@ const AuthorityComplaintDetails = () => {
                         circleClasses += " bg-green-900 border-green-500 text-green-400";
                         textClasses += " text-green-400";
                       } else if (index === currentStepIndex) {
-                        circleClasses += " bg-blue-900 border-blue-500 text-blue-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]";
-                        textClasses += " text-blue-300";
+                        circleClasses += " bg-gray-800 border-gray-700 text-gray-300 shadow-[0_0_10px_rgba(255,255,255,0.1)]";
+                        textClasses += " text-gray-300";
                       } else {
                         circleClasses += " bg-gray-800 border-gray-600 text-gray-500";
                         textClasses += " text-gray-500";
@@ -241,8 +241,8 @@ const AuthorityComplaintDetails = () => {
                     <p className="text-gray-400 font-medium">No AI Audit was generated for this complaint.</p>
                   </div>
                 ) : (
-                  <div className="bg-gray-900 p-6 rounded-lg border border-purple-500">
-                    <h3 className="text-xl font-bold text-purple-400 mb-6 flex items-center gap-2">
+                  <div className="bg-gray-900 p-6 rounded-lg border border-gray-700">
+                    <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
                       <span>🤖</span> Resolution Audit Report
                     </h3>
                     
@@ -276,9 +276,9 @@ const AuthorityComplaintDetails = () => {
                         </div>
                       </div>
 
-                      <div className="bg-purple-900/10 p-4 rounded-lg border border-purple-500/30">
-                        <span className="block text-purple-400/70 text-xs font-semibold uppercase mb-2">Recommendation</span>
-                        <p className="text-purple-300 font-medium">{complaint.aiAudit.recommendation}</p>
+                      <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                        <span className="block text-white/70 text-xs font-semibold uppercase mb-2">Recommendation</span>
+                        <p className="text-gray-300 font-medium">{complaint.aiAudit.recommendation}</p>
                       </div>
                     </div>
                   </div>
@@ -290,20 +290,20 @@ const AuthorityComplaintDetails = () => {
           <div className="space-y-6 text-gray-300 border-t border-gray-700 pt-6">
             {/* AI Investigation Section */}
             {complaint.aiInvestigation && (
-              <div className="mb-6 bg-purple-900/10 border border-purple-500/30 rounded-xl p-6">
-                <h3 className="text-lg font-bold text-purple-400 mb-4 flex items-center gap-2">
+              <div className="mb-6 bg-gray-800 border border-gray-700 rounded-xl p-6">
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
                   <span className="text-xl">🤖</span> AI Investigation Profile
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
-                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
+                    <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Detected Issue Type</span>
                     <span className="text-white font-medium">{complaint.aiInvestigation.issueType}</span>
                     <span className="ml-2 text-xs text-gray-400 border border-gray-600 rounded px-2 py-0.5">Confidence: {complaint.aiInvestigation.confidence}</span>
                   </div>
                   {complaint.aiInvestigation.estimatedImpact && (
                     <div>
-                      <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
+                      <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Estimated Impact</span>
                       <span className="text-red-300 font-medium">{complaint.aiInvestigation.estimatedImpact}</span>
                     </div>
                   )}
@@ -311,12 +311,12 @@ const AuthorityComplaintDetails = () => {
 
                 {complaint.aiInvestigation.questionsAndAnswers?.length > 0 && (
                   <div className="mb-6">
-                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
+                    <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-2">Citizen Q&A</span>
                     <div className="space-y-3 bg-gray-900/50 p-4 rounded-lg border border-gray-800">
                       {complaint.aiInvestigation.questionsAndAnswers.map((qa, idx) => (
                         <div key={idx} className="text-sm">
                           <span className="block text-gray-400">Q: {qa.question}</span>
-                          <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-purple-500 pl-3">A: {qa.answer}</span>
+                          <span className="block text-white font-medium ml-4 mt-1 border-l-2 border-gray-700 pl-3">A: {qa.answer}</span>
                         </div>
                       ))}
                     </div>
@@ -325,8 +325,8 @@ const AuthorityComplaintDetails = () => {
 
                 {complaint.aiInvestigation.recommendedAction && (
                   <div>
-                    <span className="block text-purple-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
-                    <p className="text-purple-200 bg-purple-900/20 p-3 rounded text-sm italic border border-purple-500/20">
+                    <span className="block text-gray-300/70 text-xs font-semibold uppercase mb-1">Recommended Action</span>
+                    <p className="text-gray-300 bg-gray-800 p-3 rounded text-sm italic border border-gray-700">
                       {complaint.aiInvestigation.recommendedAction}
                     </p>
                   </div>
