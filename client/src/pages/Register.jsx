@@ -6,6 +6,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -48,15 +49,24 @@ const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            className="p-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-gray-700"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <button type="submit" className="bg-white text-black text-white p-2 rounded hover:bg-gray-200 transition-colors mt-2">
+          <div className="relative flex items-center">
+            <input 
+              type={showPassword ? "text" : "password"}
+              placeholder="Password" 
+              className="p-2 pr-14 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-gray-700 w-full"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 text-sm text-gray-400 hover:text-white transition-colors"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <button type="submit" className="bg-white text-black p-2 rounded hover:bg-gray-200 transition-colors mt-2 cursor-pointer font-medium">
             Sign Up
           </button>
         </form>
