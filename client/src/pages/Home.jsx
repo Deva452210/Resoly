@@ -8,19 +8,19 @@ const Home = () => {
         <h3 className="text-white font-bold mt-4 mb-2">1. Citizen Login</h3>
         <ul className="list-disc ml-6 mb-4 space-y-1 text-sm text-gray-300">
           <li>You can register and log in OR</li>
-          <li>Use my credentials: <br/><span className="text-white">Email:</span> devakarun01@gmail.com <br/><span className="text-white">Password:</span> deva01</li>
+          <li>Use my credentials: <br/><span className="text-white">Email:</span> <span className="text-yellow-400 font-bold">devakarun01@gmail.com</span> <br/><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">deva01</span></li>
         </ul>
 
         <h3 className="text-white font-bold mt-4 mb-2">2. Officer Login</h3>
         <ul className="list-disc ml-6 mb-4 space-y-1 text-sm text-gray-300">
-          <li><span className="text-white">Email:</span> officer@resoly.com</li>
-          <li><span className="text-white">Password:</span> password123</li>
+          <li><span className="text-white">Email:</span> <span className="text-yellow-400 font-bold">officer@resoly.com</span></li>
+          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">password123</span></li>
         </ul>
 
         <h3 className="text-white font-bold mt-4 mb-2">3. Higher Authority Login</h3>
         <ul className="list-disc ml-6 mb-4 space-y-1 text-sm text-gray-300">
-          <li><span className="text-white">Email:</span> authority@resoly.com</li>
-          <li><span className="text-white">Password:</span> password123</li>
+          <li><span className="text-white">Email:</span> <span className="text-yellow-400 font-bold">authority@resoly.com</span></li>
+          <li><span className="text-white">Password:</span> <span className="text-yellow-400 font-bold">password123</span></li>
         </ul>
       </div>
     </div>
