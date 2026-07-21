@@ -1,12 +1,14 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import WaitMessage from '../components/WaitMessage';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showWaitMessage, setShowWaitMessage] = useState(false);
   const [error, setError] = useState('');
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -20,15 +22,24 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setShowWaitMessage(false);
+    
+    const waitTimer = setTimeout(() => {
+      setShowWaitMessage(true);
+    }, 2000);
+
     try {
       await register(name, email, password);
+      clearTimeout(waitTimer);
     } catch (err) {
+      clearTimeout(waitTimer);
       setError(err.response?.data?.message || 'Failed to register');
+      setShowWaitMessage(false);
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col items-center justify-center p-4">
       <div className="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center text-white">Register</h2>
         {error && <div className="bg-red-500/20 text-red-500 p-2 rounded mb-4 text-sm">{error}</div>}
@@ -71,6 +82,7 @@ const Register = () => {
           </button>
         </form>
       </div>
+      {showWaitMessage && <WaitMessage />}
     </div>
   );
 };
